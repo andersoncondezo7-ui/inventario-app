@@ -578,13 +578,23 @@
       return json.data;
     }
     async function apiPost(action, payload){
-      const url = `${API_URL}?action=${encodeURIComponent(action)}&token=${encodeURIComponent(API_TOKEN)}&payload=${encodeURIComponent(JSON.stringify(payload || {}))}`;
-      const res = await fetch(url, { method:"GET" });
-      const json = await res.json();
-      if (!json.ok) throw new Error(json.error || "Error API");
-      return json.data;
-    }
-
+          // 1. Ponemos action y token en la URL
+          const url = `${API_URL}?action=${encodeURIComponent(action)}&token=${encodeURIComponent(API_TOKEN)}`;
+          
+          // 2. Enviamos el payload en el BODY usando POST
+          // IMPORTANTE: No agregues headers 'Content-Type': 'application/json' 
+          // porque eso dispara un "preflight" (OPTIONS) que Apps Script no maneja bien y da error CORS.
+          // fetch detectará que es texto plano y Apps Script lo leerá en e.postData.contents
+          
+          const res = await fetch(url, { 
+            method: "POST", 
+            body: JSON.stringify(payload || {}) 
+          });
+    
+          const json = await res.json();
+          if (!json.ok) throw new Error(json.error || "Error API");
+          return json.data;
+        }
 
     
 
