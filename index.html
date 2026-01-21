@@ -1,1 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Inventario (Prueba API)</title>
+  <style>
+    body{font-family:system-ui;margin:16px;background:#0b1220;color:#e8efff}
+    .card{border:1px solid #22304d;background:#121a2b;border-radius:14px;padding:14px}
+    input,button{width:100%;padding:12px;border-radius:12px;border:1px solid #22304d;background:#0b1220;color:#e8efff;font-size:16px}
+    button{background:#2a6df5;border:0;font-weight:900;margin-top:10px;cursor:pointer}
+    button.secondary{background:#1f2a44;border:1px solid #22304d}
+    pre{white-space:pre-wrap;background:#070b14;padding:12px;border-radius:12px;border:1px solid #22304d;margin-top:12px}
+    label{display:block;color:#8aa0c6;margin-top:10px;margin-bottom:6px;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2 style="margin:0 0 10px;">✅ Prueba de API</h2>
+
+    <label>API URL (/exec)</label>
+    <input id="apiUrl" placeholder="Pega tu URL /exec aquí" />
+
+    <label>Token</label>
+    <input id="token" placeholder="Pega tu token aquí" />
+
+    <button onclick="ping()">Ping</button>
+    <button class="secondary" onclick="getProducts()">Get Products</button>
+
+    <pre id="out">—</pre>
+  </div>
+
+  <script>
+    const out = (x)=> document.getElementById("out").textContent = x;
+
+    async function ping(){
+      try{
+        const apiUrl = document.getElementById("apiUrl").value.trim();
+        const token = document.getElementById("token").value.trim();
+        const url = `${apiUrl}?action=ping&token=${encodeURIComponent(token)}`;
+        const res = await fetch(url);
+        const json = await res.json();
+        out(JSON.stringify(json, null, 2));
+      }catch(e){
+        out("ERROR: " + (e.message || e));
+      }
+    }
+
+    async function getProducts(){
+      try{
+        const apiUrl = document.getElementById("apiUrl").value.trim();
+        const token = document.getElementById("token").value.trim();
+        const url = `${apiUrl}?action=getProducts&token=${encodeURIComponent(token)}`;
+        const res = await fetch(url);
+        const json = await res.json();
+        out(JSON.stringify(json, null, 2));
+      }catch(e){
+        out("ERROR: " + (e.message || e));
+      }
+    }
+  </script>
+</body>
+</html>
 
