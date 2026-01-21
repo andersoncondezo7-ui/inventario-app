@@ -578,16 +578,15 @@
       return json.data;
     }
     async function apiPost(action, payload){
-      const url = `${API_URL}?action=${encodeURIComponent(action)}&token=${encodeURIComponent(API_TOKEN)}`;
-      const res = await fetch(url, {
-        method:"POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify(payload || {})
-      });
+      const url = `${API_URL}?action=${encodeURIComponent(action)}&token=${encodeURIComponent(API_TOKEN)}&payload=${encodeURIComponent(JSON.stringify(payload || {}))}`;
+      const res = await fetch(url, { method:"GET" });
       const json = await res.json();
       if (!json.ok) throw new Error(json.error || "Error API");
       return json.data;
     }
+
+
+    
 
     /***********************
      * STATE
