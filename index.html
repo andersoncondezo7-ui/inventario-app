@@ -1,17 +1,15 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-  <meta charset="utf-8" />
   <base target="_top" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b1220">
   <title>Inventario</title>
-
   <style>
     :root{
       --bg:#0b1220; --card:#121a2b; --muted:#8aa0c6; --text:#e8efff;
       --ok:#2fd07a; --bad:#ff5c7a; --line:#22304d; --btn:#2a6df5;
-      --chip:#1b2742; --radius:16px;
+      --chip:#1b2742;
+      --radius:16px;
     }
     *{ box-sizing:border-box; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
     body{
@@ -28,6 +26,7 @@
       flex-direction:column;
     }
 
+    /* Topbar */
     .topbar{
       position:sticky; top:0; z-index:10;
       display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -39,13 +38,18 @@
     }
     .title{ font-size:16px; font-weight:900; margin:0; }
     .pill{
-      font-size:12px; color:var(--muted);
-      border:1px solid var(--line); padding:6px 10px; border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid var(--line);
+      padding:6px 10px;
+      border-radius:999px;
       white-space:nowrap;
     }
 
+    /* Content */
     .content{
       padding:14px;
+      /* espacio para tabs + safe-area */
       padding-bottom: calc(140px + env(safe-area-inset-bottom));
     }
 
@@ -59,6 +63,8 @@
     .card h2{ font-size:13px; margin:0 0 12px; color:#cfe0ff; }
 
     label{ font-size:12px; color:var(--muted); display:block; margin:0 0 6px; }
+
+    /* IMPORTANT: iOS no hace zoom si font-size >= 16px */
     input, select, textarea{
       width:100%;
       border:1px solid var(--line);
@@ -67,14 +73,18 @@
       padding:12px 12px;
       border-radius:12px;
       outline:none;
-      font-size:16px; /* evita zoom iOS */
+      font-size:16px;
       line-height: 1.2;
     }
     textarea{ min-height:70px; resize:vertical; }
 
     .row{ display:grid; grid-template-columns:1fr; gap:10px; }
     .row.cols2{ grid-template-columns:1fr 1fr; }
-    @media (max-width:420px){ .row.cols2{ grid-template-columns:1fr; } }
+
+    /* En pantallas pequeñas, cols2 pasa a 1 columna */
+    @media (max-width:420px){
+      .row.cols2{ grid-template-columns:1fr; }
+    }
 
     .info{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -97,11 +107,10 @@
       cursor:pointer;
       font-weight:900;
       font-size:15px;
-      min-height:44px;
+      min-height:44px; /* touch */
     }
     button.secondary{ background:#1f2a44; border:1px solid var(--line); }
     button:disabled{ opacity:.6; cursor:not-allowed; }
-    @media (max-width:420px){ .actions button{ flex:1 1 100%; } }
 
     .msg{
       margin-top:10px;
@@ -114,9 +123,8 @@
     }
     .msg.ok{ border-color: rgba(47,208,122,.35); color:#bff3d7; background: rgba(47,208,122,.08); }
     .msg.bad{ border-color: rgba(255,92,122,.35); color:#ffd1d9; background: rgba(255,92,122,.08); }
-    .small{ font-size:12px; color:var(--muted); }
-    .hidden{ display:none; }
 
+    .small{ font-size:12px; color:var(--muted); }
     .newbox{
       margin-top:10px;
       padding:10px;
@@ -125,7 +133,7 @@
       background: rgba(11,18,32,.65);
     }
     .right{ text-align:right; }
-
+    .hidden{ display:none; }
     .chip{
       display:inline-block;
       padding:4px 8px;
@@ -136,9 +144,12 @@
       font-size:12px;
     }
 
-    /* Tabs horizontal scroll */
+    /* Tabs: horizontal scroll */
     .tabs{
-      position:fixed; left:0; right:0; bottom:0; z-index:20;
+      position:fixed;
+      left:0; right:0;
+      bottom:0;
+      z-index:20;
       background:rgba(11,18,32,.98);
       border-top:1px solid var(--line);
       padding-bottom: env(safe-area-inset-bottom);
@@ -153,6 +164,7 @@
       scrollbar-width:none;
     }
     .tabs-inner::-webkit-scrollbar{ display:none; }
+
     .tab{
       flex:0 0 auto;
       min-width:78px;
@@ -193,8 +205,12 @@
     }
     .name{ font-weight:900; }
 
+    /* En celular, compactar tabla */
     @media (max-width:420px){
-      .trow{ grid-template-columns: 1.4fr .55fr .75fr .6fr .75fr; font-size:12px; }
+      .trow{
+        grid-template-columns: 1.4fr .55fr .75fr .6fr .75fr;
+        font-size:12px;
+      }
       .trow.head{ font-size:11px; }
     }
 
@@ -222,7 +238,7 @@
       min-height:40px;
     }
 
-    /* Cards list (ventas/gastos) */
+    /* Cards list */
     .packCard{
       border:1px solid var(--line);
       border-radius:14px;
@@ -266,6 +282,11 @@
       background:#0b1220;
     }
     .barInner{ height:10px; background:var(--btn); }
+
+    /* make buttons wrap nicely on small screens */
+    @media (max-width:420px){
+      .actions button{ flex: 1 1 100%; }
+    }
   </style>
 </head>
 
@@ -273,14 +294,13 @@
   <div class="app">
     <div class="topbar">
       <div>
-        <div class="title" id="screenTitle">Ingreso</div>
-        <div class="small" id="screenSub">Captura de stock</div>
+        <div class="title" id="screenTitle">Ingresar productos</div>
+        <div class="small" id="screenSub">Captura</div>
       </div>
       <div class="pill" id="statusPill">Conectando…</div>
     </div>
 
     <div class="content">
-      <!-- 1) INGRESO PRODUCTOS -->
       <section id="screenIngresoProductos" class="card">
         <h2>📥 Ingresar productos (stock)</h2>
 
@@ -311,9 +331,17 @@
           </div>
 
           <div class="newbox" id="proNewBox" style="display:none;">
-            <label>Modelo (nuevo)</label>
-            <input id="proNewModelo" placeholder="Ej: Truza algodón" />
-            <div class="small" style="margin-top:8px;">*Código corto: 4 letras + -001 (auto).</div>
+            <div class="row cols2">
+              <div>
+                <label>Modelo (nuevo)</label>
+                <input id="proNewModelo" placeholder="Ej: Truza algodón" />
+              </div>
+              <div>
+                <label>Color</label>
+                <input id="proNewColor" placeholder="Ej: Negro, Floral" />
+              </div>
+            </div>
+            <div class="small" style="margin-top:8px;">*Código corto: 5 letras (Incluye inicial de color) + -001.</div>
           </div>
 
           <div class="row cols2" style="margin-top:10px;">
@@ -356,18 +384,9 @@
         </div>
       </section>
 
-      <!-- 2) INVENTARIO -->
       <section id="screenInventario" class="card hidden">
-        <h2>📦 Stock / Inventario</h2>
-
-        <div class="row" style="margin-top:6px;">
-          <div>
-            <label>Buscar</label>
-            <input id="invSearch" placeholder="Buscar por nombre o código…" oninput="renderInventory(INVENTORY_CACHE)" />
-          </div>
-        </div>
-
-        <div class="actions" style="margin-top:10px;">
+        <h2>📦 Inventario</h2>
+        <div class="actions" style="margin-top:0;">
           <button class="secondary" onclick="refreshInventory()">Actualizar</button>
         </div>
 
@@ -383,16 +402,11 @@
         </div>
 
         <div class="small" style="margin-top:8px;">Producto | Stock | Compra | Margen | Venta</div>
-        <div id="invMsg" class="msg hidden"></div>
       </section>
 
-      <!-- 3) INGRESO VENTAS -->
       <section id="screenIngresoVentas" class="card hidden">
         <h2>🧾 Ingresar ventas (packs)</h2>
-        <div class="small">
-          Agrega productos (máx 5). El total pagado se reparte proporcionalmente según el subtotal lista.
-          Si repites un producto en distintas líneas, se combinará automáticamente al guardar.
-        </div>
+        <div class="small">Agrega productos (máx 5). Si repites un producto, se combina automáticamente.</div>
 
         <div id="linesWrap"></div>
 
@@ -429,9 +443,8 @@
         <div id="venMsg" class="msg hidden"></div>
       </section>
 
-      <!-- 4) RESUMEN VENTAS -->
       <section id="screenResumenVentas" class="card hidden">
-        <h2>📚 Ventas (por pack)</h2>
+        <h2>📚 Resumen de ventas (por pack)</h2>
         <div class="actions" style="margin-top:0;">
           <button class="secondary" onclick="loadVentasPacks()">Actualizar</button>
         </div>
@@ -440,14 +453,13 @@
         <div id="packsMsg" class="msg hidden"></div>
       </section>
 
-      <!-- 5) INGRESO GASTOS -->
       <section id="screenIngresoGastos" class="card hidden">
-        <h2>💸 Registrar gasto operativo</h2>
+        <h2>💸 Ingresar gasto operativo</h2>
 
         <div class="row">
           <div>
             <label>Concepto</label>
-            <input id="gasConcepto" placeholder="Ej: Delivery, bolsas, transporte" />
+            <input id="gasConcepto" placeholder="Ej: Delivery, bolsa, luz, transporte" />
           </div>
           <div>
             <label>Monto</label>
@@ -467,9 +479,8 @@
         <div id="gasMsg" class="msg hidden"></div>
       </section>
 
-      <!-- 6) RESUMEN GASTOS -->
       <section id="screenResumenGastos" class="card hidden">
-        <h2>🧾 Gastos (resumen)</h2>
+        <h2>🧾 Resumen de gastos</h2>
         <div class="actions" style="margin-top:0;">
           <button class="secondary" onclick="loadGastos()">Actualizar</button>
         </div>
@@ -483,20 +494,53 @@
         <div id="gastosMsg" class="msg hidden"></div>
       </section>
 
-      <!-- 7) RESUMEN GLOBAL -->
       <section id="screenResumenGlobal" class="card hidden">
-        <h2>📊 Total (resumen global)</h2>
+        <h2>📊 Resumen global</h2>
 
-        <div class="info"><div>Monto invertido</div><div class="right"><strong id="dashInvertido">—</strong></div></div>
-        <div class="info"><div>Total ventas</div><div class="right"><strong id="dashVentas">—</strong></div></div>
-        <div class="info"><div>Costo vendido</div><div class="right"><strong id="dashCostoVendido">—</strong></div></div>
-        <div class="info"><div>Ganancia bruta</div><div class="right"><strong id="dashGanancia">—</strong></div></div>
-        <div class="info"><div>Gastos operativos</div><div class="right"><strong id="dashGastos">—</strong></div></div>
-        <div class="info"><div>Ganancia neta</div><div class="right"><strong id="dashNeta">—</strong></div></div>
+        <div class="info">
+          <div>Monto invertido</div>
+          <div class="right"><strong id="dashInvertido">—</strong></div>
+        </div>
 
-        <div class="info"><div>Mercadería (costo)</div><div class="right"><strong id="dashMercaderiaCosto">—</strong></div></div>
-        <div class="info"><div>Mercadería (venta)</div><div class="right"><strong id="dashMercaderiaVenta">—</strong></div></div>
-        <div class="info"><div>Utilidad proyectada (venta - costo)</div><div class="right"><strong id="dashUtilidadProy">—</strong></div></div>
+        <div class="info">
+          <div>Total ventas</div>
+          <div class="right"><strong id="dashVentas">—</strong></div>
+        </div>
+
+        <div class="info">
+          <div>Costo vendido</div>
+          <div class="right"><strong id="dashCostoVendido">—</strong></div>
+        </div>
+
+        <div class="info">
+          <div>Ganancia bruta</div>
+          <div class="right"><strong id="dashGanancia">—</strong></div>
+        </div>
+
+        <div class="info">
+          <div>Gastos operativos</div>
+          <div class="right"><strong id="dashGastos">—</strong></div>
+        </div>
+
+        <div class="info">
+          <div>Ganancia neta</div>
+          <div class="right"><strong id="dashNeta">—</strong></div>
+        </div>
+
+        <div class="info">
+          <div>Mercadería (costo)</div>
+          <div class="right"><strong id="dashMercaderiaCosto">—</strong></div>
+        </div>
+
+        <div class="info">
+          <div>Mercadería (venta)</div>
+          <div class="right"><strong id="dashMercaderiaVenta">—</strong></div>
+        </div>
+
+        <div class="info">
+          <div>Utilidad proyectada (venta - costo)</div>
+          <div class="right"><strong id="dashUtilidadProy">—</strong></div>
+        </div>
 
         <div class="actions">
           <button class="secondary" onclick="loadDashboard()">Actualizar</button>
@@ -505,13 +549,21 @@
         <div id="dashMsg" class="msg hidden"></div>
       </section>
 
-      <!-- 8) ANALÍTICA -->
       <section id="screenAnalitica" class="card hidden">
         <h2>📈 Analítica</h2>
 
-        <div class="info"><div>Ventas 7d</div><div class="right"><strong id="kpi7Ventas">—</strong></div></div>
-        <div class="info"><div>Margen 7d</div><div class="right"><strong id="kpi7Margen">—</strong></div></div>
-        <div class="info"><div>Ticket prom. pack (7d)</div><div class="right"><strong id="kpi7Ticket">—</strong></div></div>
+        <div class="info">
+          <div>Ventas 7d</div>
+          <div class="right"><strong id="kpi7Ventas">—</strong></div>
+        </div>
+        <div class="info">
+          <div>Margen 7d</div>
+          <div class="right"><strong id="kpi7Margen">—</strong></div>
+        </div>
+        <div class="info">
+          <div>Ticket prom. pack (7d)</div>
+          <div class="right"><strong id="kpi7Ticket">—</strong></div>
+        </div>
 
         <div class="actions">
           <button class="secondary" onclick="loadAnalitica()">Actualizar</button>
@@ -564,83 +616,22 @@
   </div>
 
   <script>
-    /***********************
-     * CONFIG API (EDITA AQUÍ)
-     ***********************/
-    const API_URL = "https://script.google.com/macros/s/AKfycbzzvjomWkwqX9asDs-i9FuwF2hnwzXY65ZoCop7ulPVwf4IZsCp1EcBCyVBSVlKnXulNw/exec";
-    const API_TOKEN = "inv_9Gk2pQ7xWm3vT1sL8nZ0aR6cY5uE4oP2iK_2026"; // 👈 Pon tu token exacto
-
-    async function apiGet(action){
-      const url = `${API_URL}?action=${encodeURIComponent(action)}&token=${encodeURIComponent(API_TOKEN)}`;
-      const res = await fetch(url, { method:"GET" });
-      const json = await res.json();
-      if (!json.ok) throw new Error(json.error || "Error API");
-      return json.data;
-    }
-    async function apiPost(action, payload){
-          // 1. Ponemos action y token en la URL
-          const url = `${API_URL}?action=${encodeURIComponent(action)}&token=${encodeURIComponent(API_TOKEN)}`;
-          
-          // 2. Enviamos el payload en el BODY usando POST
-          // IMPORTANTE: No agregues headers 'Content-Type': 'application/json' 
-          // porque eso dispara un "preflight" (OPTIONS) que Apps Script no maneja bien y da error CORS.
-          // fetch detectará que es texto plano y Apps Script lo leerá en e.postData.contents
-          
-          const res = await fetch(url, { 
-            method: "POST", 
-            body: JSON.stringify(payload || {}) 
-          });
-    
-          const json = await res.json();
-          if (!json.ok) throw new Error(json.error || "Error API");
-          return json.data;
-        }
-
-    
-
-    /***********************
-     * STATE
-     ***********************/
     let PRODUCTS = [];
-    let INVENTORY_CACHE = [];
     const NEW_VALUE = "__NEW__";
     const MAX_LINES = 5;
 
-    window.addEventListener("load", async () => {
+    window.addEventListener("load", () => {
       setPill("Cargando…");
-
-      // Validación simple del token (solo evita vacío)
-      if (!API_TOKEN || API_TOKEN.length < 10){
-        setPill("Falta token");
-        showMsg("proMsg","bad","Configura API_TOKEN en el index.html (arriba del script).");
-        return;
-      }
-
-
-
-      
-
-      try{
-        await apiGet("ping");
-        setPill("Conectado");
-      }catch(e){
-        setPill("Error API");
-        showMsg("proMsg","bad","No conecta con API: " + (e.message||e));
-        return;
-      }
-
+      loadProducts(() => {
+        refreshInventory();
+        initLines();
+        loadVentasPacks();
+        loadGastos();
+        loadDashboard();
+        loadAnalitica();
+        setPill("Listo");
+      });
       bindProductosLive();
-
-      // init
-      await loadProducts();
-      await refreshInventory();
-      initLines();
-      await loadVentasPacks();
-      await loadGastos();
-      await loadDashboard();
-      await loadAnalitica();
-
-      setPill("Listo");
 
       const paid = document.getElementById("venTotalPaid");
       if (paid){
@@ -649,14 +640,7 @@
       }
     });
 
-    /***********************
-     * UI helpers
-     ***********************/
     function setPill(t){ document.getElementById("statusPill").textContent = t; }
-    function money(x){ const n = Number(x || 0); return isFinite(n) ? n.toFixed(2) : "0.00"; }
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
-    }
     function showMsg(id, type, text){
       const el = document.getElementById(id);
       if (!el) return;
@@ -668,6 +652,8 @@
       const el = document.getElementById(id);
       if (el) el.classList.add("hidden");
     }
+    function money(x){ const n = Number(x || 0); return isFinite(n) ? n.toFixed(2) : "0.00"; }
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m])); }
 
     function go(name){
       const screens = [
@@ -682,20 +668,21 @@
       document.getElementById("tab"+name).classList.add("active");
       document.getElementById("screen"+name).classList.remove("hidden");
 
+      // auto-scroll para que el tab activo siempre se vea
       try{
         const tab = document.getElementById("tab"+name);
         tab && tab.scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"});
       }catch(e){}
 
       const titleMap = {
-        IngresoProductos:["Ingreso","Captura de stock"],
-        Inventario:["Stock","Inventario"],
-        IngresoVentas:["Vender","Packs"],
-        ResumenVentas:["Ventas","Por pack"],
-        IngresoGastos:["Gasto","Operativo"],
-        ResumenGastos:["Gastos","Resumen"],
-        ResumenGlobal:["Total","Global"],
-        Analitica:["Analítica","KPIs + Rango"]
+        IngresoProductos:["Ingresar productos","Captura"],
+        Inventario:["Inventario","Stock y precios"],
+        IngresoVentas:["Ingresar ventas","Packs"],
+        ResumenVentas:["Resumen ventas","Por pack"],
+        IngresoGastos:["Ingresar gastos","Operativos"],
+        ResumenGastos:["Resumen gastos","Lista y total"],
+        ResumenGlobal:["Resumen global","Resultados netos"],
+        Analitica:["Analítica","KPIs + ventas diarias + top productos"]
       };
       document.getElementById("screenTitle").textContent = titleMap[name][0];
       document.getElementById("screenSub").textContent = titleMap[name][1];
@@ -708,19 +695,23 @@
       if (name === "IngresoVentas") recalcPack();
     }
 
-    /***********************
-     * Productos / Ingreso
-     ***********************/
-    async function loadProducts(){
-      try{
-        const list = await apiGet("getProducts");
-        PRODUCTS = Array.isArray(list) ? list : [];
-        fillDropdown("pro");
-        onProductChange("pro");
-        refreshLinesDropdowns();
-      }catch(err){
-        showMsg("proMsg","bad","No se pudo cargar productos: " + (err?.message || err));
-      }
+    // =========================
+    // Productos (Ingreso)
+    // =========================
+    function loadProducts(after){
+      google.script.run
+        .withSuccessHandler(list => {
+          PRODUCTS = Array.isArray(list) ? list : [];
+          fillDropdown("pro");
+          onProductChange("pro");
+          refreshLinesDropdowns();
+          if (after) after();
+        })
+        .withFailureHandler(err => {
+          setPill("Error");
+          showMsg("proMsg","bad","No se pudo cargar productos: " + (err?.message || err));
+        })
+        .getProducts();
     }
 
     function fillDropdown(prefix){
@@ -791,9 +782,8 @@
 
     function bindProductosLive(){
       ["proCantidad","proTotalCompraIn","proMargen"].forEach(id => {
-        const el = document.getElementById(id);
-        el.addEventListener("input", updateProductosCalc);
-        el.addEventListener("change", updateProductosCalc);
+        document.getElementById(id).addEventListener("input", updateProductosCalc);
+        document.getElementById(id).addEventListener("change", updateProductosCalc);
       });
     }
 
@@ -802,12 +792,13 @@
       document.getElementById("proTotalCompraIn").value = "";
       document.getElementById("proNota").value = "";
       document.getElementById("proNewModelo").value = "";
+      document.getElementById("proNewColor").value = "";
       hideMsg("proMsg");
       updateProductosCalc();
       onProductChange("pro");
     }
 
-    async function addStock(){
+    function addStock(){
       hideMsg("proMsg");
 
       const isNew = document.getElementById("proProducto").value === NEW_VALUE;
@@ -821,70 +812,63 @@
 
       document.getElementById("btnProIngreso").disabled = true;
 
-      try{
-        if (isNew){
-          const modelo = document.getElementById("proNewModelo").value.trim();
-          const talla = document.getElementById("proNewTalla").value;
+      if (isNew){
+        const modelo = document.getElementById("proNewModelo").value.trim();
+        const talla = document.getElementById("proNewTalla").value;
+        const color = document.getElementById("proNewColor").value.trim();
 
-          if (!modelo){
-            showMsg("proMsg","bad","Modelo obligatorio.");
-            return;
-          }
-
-          await apiPost("createProductAndIngreso", { modelo, talla, margen_pct: margen, cantidad, precio_total: precioTotal, nota });
-          showMsg("proMsg","ok","Producto creado y stock agregado.");
-
-        } else {
-          const codigo = document.getElementById("proProducto").value;
-          await apiPost("addIngreso", { codigo, cantidad, precio_total: precioTotal, margen_pct: margen, nota });
-          showMsg("proMsg","ok","Stock agregado correctamente.");
+        if (!modelo || !color){
+          document.getElementById("btnProIngreso").disabled = false;
+          showMsg("proMsg","bad","Modelo y Color son obligatorios.");
+          return;
         }
 
-        await loadProducts();
-        await refreshInventory();
-        await loadDashboard();
-        await loadAnalitica();
+        google.script.run
+          .withSuccessHandler(() => {
+            document.getElementById("btnProIngreso").disabled = false;
+            showMsg("proMsg","ok","Producto creado y stock agregado.");
+            loadProducts(() => { refreshInventory(); loadDashboard(); loadAnalitica(); });
+            resetProductosForm();
+          })
+          .withFailureHandler(err => {
+            document.getElementById("btnProIngreso").disabled = false;
+            showMsg("proMsg","bad", err?.message || String(err));
+          })
+          .createProductAndIngreso({ modelo, talla, color, margen_pct: margen, cantidad, precio_total: precioTotal, nota });
 
-        resetProductosForm();
-      }catch(err){
-        showMsg("proMsg","bad", err?.message || String(err));
-      }finally{
-        document.getElementById("btnProIngreso").disabled = false;
+      } else {
+        const codigo = document.getElementById("proProducto").value;
+
+        google.script.run
+          .withSuccessHandler(() => {
+            document.getElementById("btnProIngreso").disabled = false;
+            showMsg("proMsg","ok","Stock agregado correctamente.");
+            loadProducts(() => { refreshInventory(); loadDashboard(); loadAnalitica(); });
+            resetProductosForm();
+          })
+          .withFailureHandler(err => {
+            document.getElementById("btnProIngreso").disabled = false;
+            showMsg("proMsg","bad", err?.message || String(err));
+          })
+          .addIngreso({ codigo, cantidad, precio_total: precioTotal, margen_pct: margen, nota });
       }
     }
 
-    /***********************
-     * Inventario
-     ***********************/
-    async function refreshInventory(){
-      hideMsg("invMsg");
-      try{
-        const list = await apiGet("getInventory");
-        INVENTORY_CACHE = Array.isArray(list) ? list : [];
-        renderInventory(INVENTORY_CACHE);
-      }catch(err){
-        showMsg("invMsg","bad","No se pudo cargar inventario: " + (err?.message || err));
-      }
+    // =========================
+    // Inventario (tabla)
+    // =========================
+    function refreshInventory(){
+      google.script.run
+        .withSuccessHandler(list => renderInventory(Array.isArray(list) ? list : []))
+        .withFailureHandler(err => showMsg("proMsg","bad","No se pudo cargar inventario: " + (err?.message || err)))
+        .getInventory();
     }
 
     function renderInventory(inv){
       const body = document.getElementById("invBody");
       body.innerHTML = "";
 
-      const q = (document.getElementById("invSearch")?.value || "").trim().toLowerCase();
-
-      let list = Array.isArray(inv) ? inv.slice() : [];
-      list.sort((a,b) => (a.nombre||"").localeCompare(b.nombre||"", "es"));
-
-      if (q){
-        list = list.filter(p => {
-          const n = String(p.nombre||"").toLowerCase();
-          const c = String(p.codigo||"").toLowerCase();
-          return n.includes(q) || c.includes(q);
-        });
-      }
-
-      if (!list.length){
+      if (!inv.length){
         const row = document.createElement("div");
         row.className = "trow";
         row.innerHTML = `<div class="name">Sin productos</div><div class="right">—</div><div class="right">—</div><div class="right">—</div><div class="right">—</div>`;
@@ -892,7 +876,9 @@
         return;
       }
 
-      for (const p of list){
+      inv.sort((a,b) => (a.nombre||"").localeCompare(b.nombre||"", "es"));
+
+      for (const p of inv){
         const stock = Number(p.stock || 0);
         const compra = Number(p.precio_compra || 0);
         const margen = Number(p.margen_pct || 0);
@@ -914,9 +900,9 @@
       }
     }
 
-    /***********************
-     * Ventas (packs) + combinar duplicados
-     ***********************/
+    // =========================
+    // Ventas (packs) + combinando duplicados
+    // =========================
     function initLines(){
       const wrap = document.getElementById("linesWrap");
       wrap.innerHTML = "";
@@ -976,7 +962,7 @@
             <div class="right">Subtotal lista: <strong class="lnSub">—</strong></div>
           </div>
 
-          <div class="small">Duplicados se combinan automáticamente al guardar.</div>
+          <div class="small">Duplicados se combinan automáticamente.</div>
         </div>
       `;
 
@@ -1089,7 +1075,6 @@
       const wrap = document.getElementById("linesWrap");
       const lineEls = [...wrap.querySelectorAll(".line")];
 
-      // UI por línea
       lineEls.forEach(ln => {
         const { qty, precioCustom, p } = getLineRaw(ln);
 
@@ -1123,7 +1108,6 @@
         subEl.textContent = (qty > 0) ? money(subtotal) : "—";
       });
 
-      // combinados
       const combined = getCombinedItemsFromUI();
       let totalLista = 0;
       let costoTotal = 0;
@@ -1157,7 +1141,7 @@
       initLines();
     }
 
-    async function submitVentaPack(){
+    function submitVentaPack(){
       hideMsg("venMsg");
 
       const combined = getCombinedItemsFromUI();
@@ -1167,15 +1151,14 @@
         return;
       }
       if (combined.length > 5){
-        showMsg("venMsg", "bad", "Máximo 5 productos por venta.");
+        showMsg("venMsg", "bad", "Máximo 5 productos distintos por venta.");
         return;
       }
 
-      // validar stock antes de enviar
       for (const it of combined){
         const stock = Number(it.p?.stock || 0);
         if (it.cantidad > stock){
-          showMsg("venMsg","bad",`Stock insuficiente en ${it.p?.nombre || it.codigo}. Disponible: ${stock}`);
+          showMsg("venMsg", "bad", `Stock insuficiente en ${it.p.nombre}. Disponible: ${stock}`);
           return;
         }
       }
@@ -1188,100 +1171,94 @@
 
       const nota = document.getElementById("venNota").value.trim();
 
+      const items = combined.map(it => ({
+        codigo: it.codigo,
+        cantidad: it.cantidad,
+        precio_unitario: (it.precio_unitario !== "" && isFinite(Number(it.precio_unitario))) ? Number(it.precio_unitario) : ""
+      }));
+
       document.getElementById("btnVentaPack").disabled = true;
 
-      try{
-        // construir items para backend (sin la referencia p)
-        const items = combined.map(it => ({
-          codigo: it.codigo,
-          cantidad: it.cantidad,
-          precio_unitario: (it.precio_unitario !== "" && isFinite(Number(it.precio_unitario))) ? Number(it.precio_unitario) : ""
-        }));
+      google.script.run
+        .withSuccessHandler(res => {
+          document.getElementById("btnVentaPack").disabled = false;
 
-        const res = await apiPost("addVentaPack", { items, total_pagado, nota });
-
-        showMsg(
-          "venMsg",
-          "ok",
-          `Pack guardado: ${res.packId} | Costo: ${money(res.costo_total)} | Ganancia: ${money(res.utilidad_total)}`
-        );
-
-        // refrescar data
-        await loadProducts();
-        await refreshInventory();
-        await loadVentasPacks();
-        await loadDashboard();
-        await loadAnalitica();
-
-        resetVentaPack();
-      }catch(err){
-        showMsg("venMsg","bad", err?.message || String(err));
-      }finally{
-        document.getElementById("btnVentaPack").disabled = false;
-      }
+          if (res && res.ok){
+            showMsg("venMsg","ok",`Venta guardada. Pack: ${res.packId} | Costo: ${money(res.costo_total)} | Ganancia: ${money(res.utilidad_total)}`);
+            loadProducts(() => { refreshInventory(); loadVentasPacks(); loadDashboard(); loadAnalitica(); });
+            resetVentaPack();
+          } else {
+            showMsg("venMsg","bad","No se pudo guardar la venta.");
+          }
+        })
+        .withFailureHandler(err => {
+          document.getElementById("btnVentaPack").disabled = false;
+          showMsg("venMsg","bad", err?.message || String(err));
+        })
+        .addVentaPack({ items, total_pagado, nota });
     }
 
-    /***********************
-     * Resumen Ventas Packs
-     ***********************/
-    async function loadVentasPacks(){
+    // =========================
+    // Resumen ventas (packs)
+    // =========================
+    function loadVentasPacks(){
       hideMsg("packsMsg");
+      google.script.run
+        .withSuccessHandler(list => renderPacks(Array.isArray(list) ? list : []))
+        .withFailureHandler(err => showMsg("packsMsg","bad", err?.message || String(err)))
+        .getVentasPacks(100);
+    }
+
+    function renderPacks(packs){
       const wrap = document.getElementById("packsWrap");
       wrap.innerHTML = "";
 
-      try{
-        const packs = await apiPost("getVentasPacks", { limit: 120 });
-        if (!packs || !packs.length){
-          wrap.innerHTML = `<div class="small" style="margin-top:10px;">Sin ventas registradas aún.</div>`;
-          return;
-        }
-
-        packs.forEach(pk => {
-          const dt = pk.timestamp ? new Date(pk.timestamp) : null;
-          const fecha = dt ? dt.toLocaleString("es-PE", { dateStyle:"medium", timeStyle:"short" }) : "—";
-
-          const card = document.createElement("div");
-          card.className = "packCard";
-
-          const itemsHtml = (pk.items || []).map(it => {
-            return `
-              <div class="packItemRow">
-                <div>${escapeHtml(it.nombre || it.codigo)} <span class="chip">${escapeHtml(it.codigo || "")}</span></div>
-                <div><strong>${Number(it.cantidad||0)}</strong></div>
-              </div>
-            `;
-          }).join("");
-
-          card.innerHTML = `
-            <div class="packTop">
-              <div>
-                <div class="packId">Pack: ${escapeHtml(pk.packId || "")}</div>
-                <div class="packMeta">${escapeHtml(fecha)}</div>
-              </div>
-              <div class="right">
-                <div class="small">Pagado</div>
-                <div><strong>${money(pk.total_pagado)}</strong></div>
-              </div>
-            </div>
-
-            <div class="packMeta">
-              Costo: <strong>${money(pk.costo_total)}</strong> ·
-              Ganancia: <strong>${money(pk.utilidad_total)}</strong>
-            </div>
-
-            <div class="packItems">${itemsHtml}</div>
-          `;
-          wrap.appendChild(card);
-        });
-
-      }catch(err){
-        showMsg("packsMsg","bad", err?.message || String(err));
+      if (!packs.length){
+        const d = document.createElement("div");
+        d.className = "msg";
+        d.textContent = "Aún no hay ventas registradas.";
+        wrap.appendChild(d);
+        return;
       }
+
+      packs.forEach(pk => {
+        const card = document.createElement("div");
+        card.className = "packCard";
+
+        const dt = pk.timestamp ? new Date(pk.timestamp) : null;
+        const dateTxt = dt ? dt.toLocaleString() : "";
+
+        const itemsTxt = (pk.items || []).map(it => `${it.nombre} x${it.cantidad}`).join(" • ");
+
+        card.innerHTML = `
+          <div class="packTop">
+            <div>
+              <div class="packId">Pack ${escapeHtml(pk.packId || "")}</div>
+              <div class="packMeta">${escapeHtml(dateTxt)}<br>${escapeHtml(itemsTxt)}</div>
+            </div>
+            <div class="right">
+              <div><strong>${money(pk.total_pagado || 0)}</strong></div>
+              <div class="small">Costo ${money(pk.costo_total || 0)}</div>
+              <div class="small">Gan ${money(pk.utilidad_total || 0)}</div>
+            </div>
+          </div>
+
+          <div class="packItems">
+            ${(pk.items || []).map(it => `
+              <div class="packItemRow">
+                <div>${escapeHtml(it.nombre)} <span class="chip">x${Number(it.cantidad||0)}</span></div>
+                <div class="right">${money(it.utilidad_linea || 0)}</div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+        wrap.appendChild(card);
+      });
     }
 
-    /***********************
-     * Gastos
-     ***********************/
+    // =========================
+    // Gastos
+    // =========================
     function resetGastoForm(){
       document.getElementById("gasConcepto").value = "";
       document.getElementById("gasMonto").value = "";
@@ -1289,7 +1266,7 @@
       hideMsg("gasMsg");
     }
 
-    async function saveGasto(){
+    function saveGasto(){
       hideMsg("gasMsg");
       const concepto = document.getElementById("gasConcepto").value.trim();
       const monto = Number(document.getElementById("gasMonto").value);
@@ -1299,272 +1276,233 @@
       if (!isFinite(monto) || monto <= 0){ showMsg("gasMsg","bad","Monto inválido."); return; }
 
       document.getElementById("btnGasto").disabled = true;
-      try{
-        await apiPost("addGasto", { concepto, monto, nota });
-        showMsg("gasMsg","ok","Gasto guardado.");
-        resetGastoForm();
-        await loadGastos();
-        await loadDashboard();
-      }catch(err){
-        showMsg("gasMsg","bad", err?.message || String(err));
-      }finally{
-        document.getElementById("btnGasto").disabled = false;
-      }
+
+      google.script.run
+        .withSuccessHandler(() => {
+          document.getElementById("btnGasto").disabled = false;
+          showMsg("gasMsg","ok","Gasto guardado.");
+          resetGastoForm();
+          loadGastos();
+          loadDashboard();
+          loadAnalitica();
+        })
+        .withFailureHandler(err => {
+          document.getElementById("btnGasto").disabled = false;
+          showMsg("gasMsg","bad", err?.message || String(err));
+        })
+        .addGasto({ concepto, monto, nota });
     }
 
-    async function loadGastos(){
+    function loadGastos(){
       hideMsg("gastosMsg");
+      google.script.run
+        .withSuccessHandler(list => {
+          renderGastos(Array.isArray(list) ? list : []);
+          const total = (list || []).reduce((a,g)=> a + (Number(g.monto)||0), 0);
+          document.getElementById("gTotal").textContent = money(total);
+        })
+        .withFailureHandler(err => showMsg("gastosMsg","bad", err?.message || String(err)))
+        .getGastos(200);
+    }
+
+    function renderGastos(gastos){
       const wrap = document.getElementById("gastosWrap");
       wrap.innerHTML = "";
 
-      try{
-        const list = await apiPost("getGastos", { limit: 200 });
-        const total = list.reduce((a, x) => a + (Number(x.monto)||0), 0);
-        document.getElementById("gTotal").textContent = money(total);
+      if (!gastos.length){
+        const d = document.createElement("div");
+        d.className = "msg";
+        d.textContent = "Aún no hay gastos.";
+        wrap.appendChild(d);
+        return;
+      }
 
-        if (!list.length){
-          wrap.innerHTML = `<div class="small" style="margin-top:10px;">Sin gastos registrados.</div>`;
-          return;
-        }
+      gastos.forEach(g => {
+        const dt = g.timestamp ? new Date(g.timestamp) : null;
+        const dateTxt = dt ? dt.toLocaleString() : "";
 
-        list.forEach(g => {
-          const dt = g.timestamp ? new Date(g.timestamp) : null;
-          const fecha = dt ? dt.toLocaleString("es-PE", { dateStyle:"medium", timeStyle:"short" }) : "—";
-
-          const card = document.createElement("div");
-          card.className = "packCard";
-          card.innerHTML = `
-            <div class="packTop">
-              <div>
-                <div class="packId">${escapeHtml(g.concepto || "")}</div>
-                <div class="packMeta">${escapeHtml(fecha)}</div>
-                ${g.nota ? `<div class="packMeta">${escapeHtml(g.nota)}</div>` : ""}
-              </div>
-              <div class="right">
-                <div class="small">Monto</div>
-                <div><strong>${money(g.monto)}</strong></div>
-              </div>
+        const card = document.createElement("div");
+        card.className = "packCard";
+        card.innerHTML = `
+          <div class="packTop">
+            <div>
+              <div class="packId">${escapeHtml(g.concepto || "")}</div>
+              <div class="packMeta">${escapeHtml(dateTxt)}${g.nota ? "<br>"+escapeHtml(g.nota) : ""}</div>
             </div>
-          `;
-          wrap.appendChild(card);
-        });
-      }catch(err){
-        showMsg("gastosMsg","bad", err?.message || String(err));
-      }
+            <div class="right">
+              <div><strong>${money(g.monto || 0)}</strong></div>
+            </div>
+          </div>
+        `;
+        wrap.appendChild(card);
+      });
     }
 
-    /***********************
-     * Dashboard (Resumen global)
-     ***********************/
-    async function loadDashboard(){
+    // =========================
+    // Dashboard global
+    // =========================
+    function loadDashboard(){
       hideMsg("dashMsg");
-      try{
-        const d = await apiGet("getDashboard");
+      google.script.run
+        .withSuccessHandler(d => {
+          document.getElementById("dashInvertido").textContent = money(d?.monto_invertido || 0);
+          document.getElementById("dashVentas").textContent = money(d?.total_ventas || 0);
+          document.getElementById("dashCostoVendido").textContent = money(d?.costo_vendido || 0);
+          document.getElementById("dashGanancia").textContent = money(d?.ganancia_total || 0);
+          document.getElementById("dashGastos").textContent = money(d?.gastos_total || 0);
+          document.getElementById("dashNeta").textContent = money(d?.ganancia_neta || 0);
+          document.getElementById("dashMercaderiaCosto").textContent = money(d?.mercaderia_costo || 0);
+          document.getElementById("dashMercaderiaVenta").textContent = money(d?.mercaderia_venta || 0);
+          document.getElementById("dashUtilidadProy").textContent = money(d?.utilidad_proyectada || 0);
+        })
+        .withFailureHandler(err => showMsg("dashMsg","bad", err?.message || String(err)))
+        .getDashboard();
+    }
 
-        document.getElementById("dashInvertido").textContent = money(d?.monto_invertido || 0);
-        document.getElementById("dashVentas").textContent = money(d?.total_ventas || 0);
-        document.getElementById("dashCostoVendido").textContent = money(d?.costo_vendido || 0);
-        document.getElementById("dashGanancia").textContent = money(d?.ganancia_total || 0);
-        document.getElementById("dashGastos").textContent = money(d?.gastos_total || 0);
-        document.getElementById("dashNeta").textContent = money(d?.ganancia_neta || 0);
+    // =========================
+    // Analítica (KPIs + rango)
+    // =========================
+    function loadAnalitica(){
+      hideMsg("anaMsg");
 
-        document.getElementById("dashMercaderiaCosto").textContent = money(d?.mercaderia_costo || 0);
-        document.getElementById("dashMercaderiaVenta").textContent = money(d?.mercaderia_venta || 0);
-        document.getElementById("dashUtilidadProy").textContent = money(d?.utilidad_proyectada || 0);
+      google.script.run
+        .withSuccessHandler(k => {
+          const k7 = k?.kpi_7d || {};
+          document.getElementById("kpi7Ventas").textContent = money(k7.ventas || 0);
+          document.getElementById("kpi7Margen").textContent = (k7.margen_bruto_pct || 0).toFixed(1) + "%";
+          document.getElementById("kpi7Ticket").textContent = money(k7.ticket_promedio || 0);
+        })
+        .withFailureHandler(err => showMsg("anaMsg","bad", err?.message || String(err)))
+        .getKPIs();
 
-      }catch(err){
-        showMsg("dashMsg","bad", err?.message || String(err));
+      const desdeEl = document.getElementById("anaDesde");
+      const hastaEl = document.getElementById("anaHasta");
+      if (desdeEl && hastaEl && (!desdeEl.value || !hastaEl.value)){
+        setRangoRapido(14);
+      } else {
+        applyAnaliticaRango();
       }
     }
 
-    /***********************
-     * Analítica
-     ***********************/
     function todayKey(){
       const d = new Date();
       const y = d.getFullYear();
       const m = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
-      return `${y}-${m}-${dd}`;
+      const day = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
     }
-    function minusDaysKey(n){
-      const d = new Date();
-      d.setDate(d.getDate() - n);
+
+    function addDaysKey(key, delta){
+      const m = key.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!m) return key;
+      const d = new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+      d.setDate(d.getDate() + delta);
       const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
-      return `${y}-${m}-${dd}`;
-    }
-
-    async function loadAnalitica(){
-      hideMsg("anaMsg");
-
-      try{
-        const k = await apiGet("getKPIs");
-        const k7 = k?.kpi_7d || {};
-
-        document.getElementById("kpi7Ventas").textContent = money(k7.ventas || 0);
-        document.getElementById("kpi7Margen").textContent = (isFinite(Number(k7.margen_bruto_pct)) ? Number(k7.margen_bruto_pct).toFixed(1) : "0.0") + "%";
-        document.getElementById("kpi7Ticket").textContent = money(k7.ticket_promedio || 0);
-
-        // set rango por defecto si está vacío
-        const dEl = document.getElementById("anaDesde");
-        const hEl = document.getElementById("anaHasta");
-        if (dEl && hEl && (!dEl.value || !hEl.value)){
-          dEl.value = minusDaysKey(7);
-          hEl.value = todayKey();
-        }
-
-        await applyAnaliticaRango();
-      }catch(err){
-        showMsg("anaMsg","bad", err?.message || String(err));
-      }
+      const mo = String(d.getMonth()+1).padStart(2,"0");
+      const da = String(d.getDate()).padStart(2,"0");
+      return `${y}-${mo}-${da}`;
     }
 
     function setRangoRapido(days){
-      const dEl = document.getElementById("anaDesde");
-      const hEl = document.getElementById("anaHasta");
-      dEl.value = minusDaysKey(days);
-      hEl.value = todayKey();
+      const hasta = todayKey();
+      const desde = addDaysKey(hasta, -(days-1));
+      document.getElementById("anaDesde").value = desde;
+      document.getElementById("anaHasta").value = hasta;
       applyAnaliticaRango();
     }
 
-    async function applyAnaliticaRango(){
+    function applyAnaliticaRango(){
       hideMsg("anaMsg");
+
       const desde = document.getElementById("anaDesde").value;
       const hasta = document.getElementById("anaHasta").value;
+
       if (!desde || !hasta){
-        showMsg("anaMsg","bad","Selecciona desde y hasta.");
+        showMsg("anaMsg","bad","Selecciona 'Desde' y 'Hasta'.");
         return;
       }
 
-      try{
-        // ventas diarias
-        const vd = await apiPost("getVentasDiariasRango", { desde, hasta });
-        renderVentasDiariasChart(vd || []);
+      google.script.run
+        .withSuccessHandler(rows => renderVentasDiarias(rows || []))
+        .withFailureHandler(err => showMsg("anaMsg","bad", err?.message || String(err)))
+        .getVentasDiariasRango(desde, hasta);
 
-        // rentabilidad productos
-        const rp = await apiPost("getRentabilidadProductosRango", { desde, hasta });
-        renderTopProductos(rp || []);
+      google.script.run
+        .withSuccessHandler(list => renderTopProductos(list || []))
+        .withFailureHandler(err => showMsg("anaMsg","bad", err?.message || String(err)))
+        .getRentabilidadProductosRango(desde, hasta);
 
-        // alertas rotación
-        const al = await apiPost("getAlertasRotacion", { diasVentana: 30, umbralDias: 14 });
-        renderAlertasRotacion(al || []);
-
-      }catch(err){
-        showMsg("anaMsg","bad", err?.message || String(err));
-      }
+      google.script.run
+        .withSuccessHandler(list => renderAlertasRotacion(list || []))
+        .withFailureHandler(err => showMsg("anaMsg","bad", err?.message || String(err)))
+        .getAlertasRotacion(30, 14);
     }
 
-    function renderVentasDiariasChart(list){
-      const el = document.getElementById("chartVentasDiarias");
-      el.innerHTML = "";
+    function renderVentasDiarias(rows){
+      const wrap = document.getElementById("chartVentasDiarias");
+      wrap.innerHTML = "";
 
-      if (!list.length){
-        el.innerHTML = `<div class="small" style="margin-top:8px;">Sin datos en el rango.</div>`;
+      if (!rows.length){
+        wrap.innerHTML = `<div class="msg">Sin datos</div>`;
         return;
       }
 
-      const max = Math.max(...list.map(x => Number(x.ventas)||0), 0) || 1;
+      const max = Math.max(...rows.map(r => Number(r.ventas||0)), 1);
 
-      list.forEach(x => {
-        const row = document.createElement("div");
-        row.className = "packCard";
-        const pct = Math.min(100, ((Number(x.ventas)||0) / max) * 100);
+      rows.forEach(r => {
+        const pct = (Number(r.ventas||0) / max) * 100;
 
-        row.innerHTML = `
-          <div class="packTop">
-            <div>
-              <div class="packId">${escapeHtml(x.date || "")}</div>
-              <div class="packMeta">Packs: ${Number(x.packs||0)}</div>
-            </div>
-            <div class="right">
-              <div class="small">Ventas</div>
-              <div><strong>${money(x.ventas||0)}</strong></div>
-            </div>
-          </div>
-          <div class="barWrap">
-            <div class="barOuter"><div class="barInner" style="width:${pct}%"></div></div>
-          </div>
+        const bar = document.createElement("div");
+        bar.className = "barWrap";
+        bar.innerHTML = `
+          <div class="small">${escapeHtml(r.date)} • packs ${Number(r.packs||0)} • ${money(r.ventas || 0)}</div>
+          <div class="barOuter"><div class="barInner" style="width:${pct}%;"></div></div>
         `;
-        el.appendChild(row);
+        wrap.appendChild(bar);
       });
     }
 
     function renderTopProductos(list){
-      const el = document.getElementById("topProductos");
-      el.innerHTML = "";
-
+      const wrap = document.getElementById("topProductos");
+      wrap.innerHTML = "";
       if (!list.length){
-        el.innerHTML = `<div class="small" style="margin-top:8px;">Sin ventas por producto en el rango.</div>`;
+        wrap.innerHTML = `<div class="msg">Sin datos</div>`;
         return;
       }
-
       const top = list.slice(0, 10);
-      const maxU = Math.max(...top.map(x => Number(x.utilidad)||0), 0) || 1;
 
       top.forEach(p => {
-        const row = document.createElement("div");
-        row.className = "packCard";
-
-        const u = Number(p.utilidad||0);
-        const pct = Math.min(100, (u / maxU) * 100);
-
-        row.innerHTML = `
-          <div class="packTop">
-            <div>
-              <div class="packId">${escapeHtml(p.nombre || p.codigo || "")}</div>
-              <div class="packMeta">Unidades: ${Number(p.unidades||0)} · Margen: ${Number(p.margen_pct||0).toFixed(1)}%</div>
-              <div class="packMeta">Ventas: ${money(p.ventas||0)} · Costo: ${money(p.costo||0)}</div>
-            </div>
-            <div class="right">
-              <div class="small">Utilidad</div>
-              <div><strong>${money(u)}</strong></div>
-            </div>
+        const el = document.createElement("div");
+        el.className = "info";
+        el.innerHTML = `
+          <div>
+            <strong>${escapeHtml(p.nombre || "")}</strong><br>
+            <span class="small">Unid: ${Number(p.unidades||0)} • Ventas: ${money(p.ventas||0)} • Margen: ${(p.margen_pct||0).toFixed(1)}%</span>
           </div>
-          <div class="barWrap">
-            <div class="barOuter"><div class="barInner" style="width:${pct}%"></div></div>
-          </div>
+          <div class="right"><strong>${money(p.utilidad||0)}</strong></div>
         `;
-        el.appendChild(row);
+        wrap.appendChild(el);
       });
     }
 
     function renderAlertasRotacion(list){
-      const el = document.getElementById("alertasRotacion");
-      el.innerHTML = "";
-
+      const wrap = document.getElementById("alertasRotacion");
+      wrap.innerHTML = "";
       if (!list.length){
-        el.innerHTML = `<div class="small" style="margin-top:8px;">Sin alertas (rotación OK).</div>`;
+        wrap.innerHTML = `<div class="msg ok">Todo bien: no hay alertas de rotación.</div>`;
         return;
       }
-
       list.slice(0, 20).forEach(a => {
-        const row = document.createElement("div");
-        row.className = "packCard";
-
-        row.innerHTML = `
-          <div class="packTop">
-            <div>
-              <div class="packId">${escapeHtml(a.nombre || a.codigo || "")}</div>
-              <div class="packMeta">${escapeHtml(a.mensaje || "")}</div>
-              <div class="packMeta">Stock: ${Number(a.stock||0)} · Días sin venta: ${a.dias_sin_venta == null ? "N/A" : Number(a.dias_sin_venta)}</div>
-            </div>
-            <div class="right">
-              <span class="chip">ALERTA</span>
-            </div>
-          </div>
-        `;
-        el.appendChild(row);
+        const el = document.createElement("div");
+        el.className = "msg bad";
+        const dias = (a.dias_sin_venta == null) ? "—" : a.dias_sin_venta;
+        el.textContent = `${a.nombre} | Stock: ${a.stock} | Días sin venta: ${dias} | ${a.mensaje}`;
+        wrap.appendChild(el);
       });
     }
-
   </script>
 </body>
 </html>
-
-
-
 
 
 
