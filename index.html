@@ -1,3 +1,8 @@
+File: Index.html
+  Description: Main interface for the Inventory and Sales Management System.
+  Includes sections for Stock Entry, Inventory View, Sales Entry (Packs), 
+  Expense Tracking, and Global Analytics.
+*/?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -123,6 +128,8 @@
     }
     .msg.ok{ border-color: rgba(47,208,122,.35); color:#bff3d7; background: rgba(47,208,122,.08); }
     .msg.bad{ border-color: rgba(255,92,122,.35); color:#ffd1d9; background: rgba(255,92,122,.08); }
+    .text-bad { color: var(--bad); }
+    .text-warning { color: #f5a623; }
 
     .small{ font-size:12px; color:var(--muted); }
     .newbox{
@@ -390,6 +397,17 @@
           <button class="secondary" onclick="refreshInventory()">Actualizar</button>
         </div>
 
+        <!-- NUEVO: Alerta de reposición automática -->
+        <div id="reponerBox" class="msg bad hidden" style="margin-top:12px; margin-bottom:12px;">
+          <strong style="color:var(--bad);">⚠️ Lista de Compras (Bajo Stock):</strong>
+          <ul id="reponerList" style="margin: 5px 0 0 20px; padding: 0; color:#ffd1d9; font-size:13px;"></ul>
+        </div>
+
+        <!-- NUEVO: Buscador de inventario -->
+        <div style="margin-bottom:12px;">
+          <input id="invSearch" type="text" placeholder="🔍 Buscar por nombre o código..." oninput="filterInventory()" />
+        </div>
+
         <div class="table">
           <div class="trow head">
             <div>Producto</div>
@@ -416,12 +434,36 @@
 
         <div class="row cols2" style="margin-top:10px;">
           <div>
-            <label>Total calculado (según precios unit)</label>
+            <label>Total calculado</label>
             <input id="venTotalCalc" disabled />
           </div>
           <div>
-            <label>Total pagado (monto real)</label>
+            <label>Total pagado</label>
             <input id="venTotalPaid" type="number" step="0.01" min="0" placeholder="Ej: 85.00" />
+          </div>
+        </div>
+
+        <!-- NUEVO: Método de Pago -->
+        <div style="margin-top:10px;">
+          <label>Método de Pago</label>
+          <select id="venMetodoPago">
+            <option value="Efectivo" selected>💵 Efectivo</option>
+            <option value="Yape">🟣 Yape</option>
+            <option value="Plin">🔵 Plin</option>
+            <option value="Transferencia">🏦 Transferencia</option>
+            <option value="Tarjeta">💳 Tarjeta (POS)</option>
+          </select>
+        </div>
+
+        <!-- NUEVO: Datos del cliente -->
+        <div class="row cols2" style="margin-top:10px;">
+          <div>
+            <label>Nombre del cliente (opcional)</label>
+            <input id="venClienteNombre" placeholder="Ej: Juan Pérez" />
+          </div>
+          <div>
+            <label>Celular (opcional)</label>
+            <input id="venClienteCelular" type="tel" placeholder="Ej: 987654321" />
           </div>
         </div>
 
@@ -619,6 +661,7 @@
     let PRODUCTS = [];
     const NEW_VALUE = "__NEW__";
     const MAX_LINES = 5;
+    let CURRENT_INVENTORY = []; // Guarda el inventario para el buscador
 
     window.addEventListener("load", () => {
       setPill("Cargando…");
@@ -859,14 +902,30 @@
     // =========================
     function refreshInventory(){
       google.script.run
-        .withSuccessHandler(list => renderInventory(Array.isArray(list) ? list : []))
+        .withSuccessHandler(list => {
+          CURRENT_INVENTORY = Array.isArray(list) ? list : [];
+          renderInventory(CURRENT_INVENTORY);
+        })
         .withFailureHandler(err => showMsg("proMsg","bad","No se pudo cargar inventario: " + (err?.message || err)))
         .getInventory();
+    }
+
+    function filterInventory() {
+      const q = document.getElementById("invSearch").value.toLowerCase();
+      const filtered = CURRENT_INVENTORY.filter(p => 
+        (p.nombre || "").toLowerCase().includes(q) || 
+        (p.codigo || "").toLowerCase().includes(q)
+      );
+      renderInventory(filtered);
     }
 
     function renderInventory(inv){
       const body = document.getElementById("invBody");
       body.innerHTML = "";
+      const reponerBox = document.getElementById("reponerBox");
+      const reponerList = document.getElementById("reponerList");
+      reponerList.innerHTML = "";
+      let lowStockCount = 0;
 
       if (!inv.length){
         const row = document.createElement("div");
@@ -884,6 +943,15 @@
         const margen = Number(p.margen_pct || 0);
         const venta  = Number(p.precio_venta || 0);
 
+        // Detectar stock bajo
+        if (stock <= 2) {
+          lowStockCount++;
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${escapeHtml(p.nombre)}</strong> - Quedan: ${stock}`;
+          reponerList.appendChild(li);
+        }
+        const stockClass = stock <= 0 ? "text-bad" : (stock <= 2 ? "text-warning" : "");
+
         const row = document.createElement("div");
         row.className = "trow";
         row.innerHTML = `
@@ -891,12 +959,18 @@
             <div class="name">${escapeHtml(p.nombre || "")}</div>
             <div class="chip">${escapeHtml(p.codigo || "")}</div>
           </div>
-          <div class="right"><strong>${stock}</strong></div>
+          <div class="right"><strong class="${stockClass}">${stock}</strong></div>
           <div class="right">${money(compra)}</div>
           <div class="right">${margen.toFixed(0)}%</div>
           <div class="right"><strong>${money(venta)}</strong></div>
         `;
         body.appendChild(row);
+      }
+
+      if (lowStockCount > 0) {
+        reponerBox.classList.remove("hidden");
+      } else {
+        reponerBox.classList.add("hidden");
       }
     }
 
@@ -1137,6 +1211,8 @@
     function resetVentaPack(){
       document.getElementById("venTotalPaid").value = "";
       document.getElementById("venNota").value = "";
+      document.getElementById("venClienteNombre").value = "";
+      document.getElementById("venClienteCelular").value = "";
       hideMsg("venMsg");
       initLines();
     }
@@ -1170,6 +1246,9 @@
       }
 
       const nota = document.getElementById("venNota").value.trim();
+      const metodo_pago = document.getElementById("venMetodoPago").value;
+      const cliente_nombre = document.getElementById("venClienteNombre").value.trim();
+      const cliente_celular = document.getElementById("venClienteCelular").value.trim();
 
       const items = combined.map(it => ({
         codigo: it.codigo,
@@ -1195,7 +1274,7 @@
           document.getElementById("btnVentaPack").disabled = false;
           showMsg("venMsg","bad", err?.message || String(err));
         })
-        .addVentaPack({ items, total_pagado, nota });
+        .addVentaPack({ items, total_pagado, nota, metodo_pago, cliente_nombre, cliente_celular });
     }
 
     // =========================
@@ -1229,12 +1308,13 @@
         const dateTxt = dt ? dt.toLocaleString() : "";
 
         const itemsTxt = (pk.items || []).map(it => `${it.nombre} x${it.cantidad}`).join(" • ");
+        const clienteTxt = pk.cliente_nombre ? `👤 ${escapeHtml(pk.cliente_nombre)} ${pk.cliente_celular ? '('+escapeHtml(pk.cliente_celular)+')' : ''}` : "";
 
         card.innerHTML = `
           <div class="packTop">
             <div>
-              <div class="packId">Pack ${escapeHtml(pk.packId || "")}</div>
-              <div class="packMeta">${escapeHtml(dateTxt)}<br>${escapeHtml(itemsTxt)}</div>
+              <div class="packId">Pack ${escapeHtml(pk.packId || "")} <span class="chip">${escapeHtml(pk.metodo_pago || "Efectivo")}</span></div>
+              <div class="packMeta">${escapeHtml(dateTxt)}${clienteTxt ? '<br>'+clienteTxt : ''}<br>${escapeHtml(itemsTxt)}</div>
             </div>
             <div class="right">
               <div><strong>${money(pk.total_pagado || 0)}</strong></div>
@@ -1516,14 +1596,3 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-                
