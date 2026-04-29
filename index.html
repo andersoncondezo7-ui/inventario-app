@@ -1101,9 +1101,15 @@
         </div>
 
         <div class="row">
-          <div>
-            <label>Producto</label>
-            <select class="lnProducto" onchange="recalcPack()"></select>
+          <div class="row cols2">
+            <div>
+              <label>Filtrar Modelo</label>
+              <select class="lnFilterModelo" onchange="filterLineSelect(this)"></select>
+            </div>
+            <div>
+              <label>Producto</label>
+              <select class="lnProducto" onchange="recalcPack()"></select>
+            </div>
           </div>
 
           <div class="row cols2" style="margin-top:10px;">
