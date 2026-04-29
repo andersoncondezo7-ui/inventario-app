@@ -675,14 +675,15 @@
     const google = {
       script: {
         get run() {
-          const chain = {
-            _success: null, _failure: null,
-            withSuccessHandler(cb) { this._success = cb; return this; },
-            withFailureHandler(cb) { this._failure = cb; return this; }
+          const state = { success: null, failure: null };
+          const runner = {
+            withSuccessHandler(cb) { state.success = cb; return runner; },
+            withFailureHandler(cb) { state.failure = cb; return runner; }
           };
-          return new Proxy(chain, {
+          return new Proxy(runner, {
             get(target, prop) {
               if (prop in target) return target[prop];
+              if (typeof prop === "symbol") return undefined;
               return function(...args) {
                 let payloadObj = {};
                 if (['getVentasPacks', 'getGastos'].includes(prop)) payloadObj = { limit: args[0] };
@@ -690,18 +691,18 @@
                 else if (prop === 'getAlertasRotacion') payloadObj = { diasVentana: args[0], umbralDias: args[1] };
                 else payloadObj = args[0] || {};
 
-                const qs = `?action=${prop}&token=${API_TOKEN}`;
-                fetch(API_URL + qs, {
-                  method: 'POST', redirect: 'follow',
-                  headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Evita bloqueos de CORS
-                  body: JSON.stringify(payloadObj)
-                })
+                // Se usa GET y el payload se envía en la URL para evitar que Google
+                // elimine los datos en su redirección (302) de CORS.
+                const payloadStr = encodeURIComponent(JSON.stringify(payloadObj));
+                const qs = `?action=${prop}&token=${API_TOKEN}&payload=${payloadStr}`;
+                
+                fetch(API_URL + qs)
                 .then(r => r.json())
                 .then(res => {
-                  if (res.ok) { if (target._success) target._success(res.data); } 
-                  else { if (target._failure) target._failure(res.error || "Error del servidor"); }
+                  if (res.ok) { if (state.success) state.success(res.data); } 
+                  else { if (state.failure) state.failure(res.error || "Error del servidor"); }
                 })
-                .catch(err => { if (target._failure) target._failure(err.message || String(err)); });
+                .catch(err => { if (state.failure) state.failure(err.message || String(err)); });
               };
             }
           });
@@ -1632,27 +1633,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
 
 
 
