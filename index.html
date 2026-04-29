@@ -191,7 +191,7 @@
     /* Inventory table */
     .table{
       margin-top:12px;
-      border:1px solid var(--line);
+      border:1px solid var(--line); 
       border-radius:14px;
       overflow:hidden;
     }
@@ -199,7 +199,7 @@
       display:grid;
       grid-template-columns: 1.5fr .55fr .8fr .65fr .8fr;
       gap:8px;
-      padding:10px 10px;
+      padding:10px 10px; 
       border-top:1px solid var(--line);
       align-items:center;
       font-size:13px;
@@ -216,7 +216,7 @@
     /* En celular, compactar tabla */
     @media (max-width:420px){
       .trow{
-        grid-template-columns: 1.4fr .55fr .75fr .6fr .75fr;
+        grid-template-columns: 1.4fr .55fr .75fr .6fr .75fr; 
         font-size:12px;
       }
       .trow.head{ font-size:11px; }
@@ -352,6 +352,10 @@
             <div class="small" style="margin-top:8px;">*Código corto: 5 letras (Incluye inicial de color) + -001.</div>
           </div>
 
+          <div id="proExistingColorBox" style="margin-top:10px; display:none;">
+            <label>Color (existente)</label>
+            <input id="proExistingColor" disabled />
+          </div>
           <div class="row cols2" style="margin-top:10px;">
             <div>
               <label>Cantidad a agregar</label>
@@ -411,11 +415,12 @@
 
         <div class="table">
           <div class="trow head">
-            <div>Producto</div>
+            <div>Modelo</div>
+            <div>Color</div>
             <div class="right">Stock</div>
             <div class="right">Compra</div>
             <div class="right">Margen</div>
-            <div class="right">Venta</div>
+            <div class="right">Venta</div> 
           </div>
           <div id="invBody"></div>
         </div>
@@ -841,6 +846,7 @@
 
       if (prefix === "pro"){
         document.getElementById("proNewBox").style.display = isNew ? "block" : "none";
+        document.getElementById("proExistingColorBox").style.display = isNew ? "none" : "block";
         document.getElementById("proNewTalla").disabled = !isNew;
 
         const code = document.getElementById("proProducto").value;
@@ -849,8 +855,10 @@
         if (p){
           document.getElementById("proStock").textContent = Number(p.stock || 0);
           document.getElementById("proMargen").value = String(Number(p.margen_pct || 50));
+          document.getElementById("proExistingColor").value = p.color || "";
         } else {
           document.getElementById("proStock").textContent = "—";
+          document.getElementById("proExistingColor").value = "";
         }
         updateProductosCalc();
       }
@@ -980,7 +988,7 @@
       if (!inv.length){
         const row = document.createElement("div");
         row.className = "trow";
-        row.innerHTML = `<div class="name">Sin productos</div><div class="right">—</div><div class="right">—</div><div class="right">—</div><div class="right">—</div>`;
+        row.innerHTML = `<div class="name">Sin productos</div><div>—</div><div class="right">—</div><div class="right">—</div><div class="right">—</div><div class="right">—</div>`;
         body.appendChild(row);
         return;
       }
@@ -989,6 +997,7 @@
 
       for (const p of inv){
         const stock = Number(p.stock || 0);
+        const color = p.color || "";
         const compra = Number(p.precio_compra || 0);
         const margen = Number(p.margen_pct || 0);
         const venta  = Number(p.precio_venta || 0);
@@ -1006,9 +1015,10 @@
         row.className = "trow";
         row.innerHTML = `
           <div>
-            <div class="name">${escapeHtml(p.nombre || "")}</div>
+            <div class="name">${escapeHtml(p.modelo || "")} (${escapeHtml(p.talla || "")})</div>
             <div class="chip">${escapeHtml(p.codigo || "")}</div>
           </div>
+          <div>${escapeHtml(color)}</div>
           <div class="right"><strong class="${stockClass}">${stock}</strong></div>
           <div class="right">${money(compra)}</div>
           <div class="right">${margen.toFixed(0)}%</div>
