@@ -801,6 +801,7 @@
       google.script.run
         .withSuccessHandler(list => {
           PRODUCTS = Array.isArray(list) ? list : [];
+          populateModelFilters();
           fillDropdown("pro");
           onProductChange("pro");
           refreshLinesDropdowns();
@@ -813,11 +814,36 @@
         .getProducts();
     }
 
+    function populateModelFilters() {
+      const modelos = [...new Set(PRODUCTS.map(p => p.modelo).filter(Boolean))].sort();
+      
+      const proFilter = document.getElementById("proFilterModelo");
+      if (proFilter) {
+        const current = proFilter.value;
+        proFilter.innerHTML = '<option value="">Todos los modelos</option>';
+        modelos.forEach(m => proFilter.appendChild(new Option(m, m)));
+        if (modelos.includes(current)) proFilter.value = current;
+      }
+
+      const lnFilters = document.querySelectorAll(".lnFilterModelo");
+      lnFilters.forEach(sel => {
+        const current = sel.value;
+        sel.innerHTML = '<option value="">Todos los modelos</option>';
+        modelos.forEach(m => sel.appendChild(new Option(m, m)));
+        if (modelos.includes(current)) sel.value = current;
+      });
+    }
+
     function fillDropdown(prefix){
       const sel = document.getElementById(prefix + "Producto");
+      const filterSel = document.getElementById(prefix + "FilterModelo");
+      const filterVal = filterSel ? filterSel.value : "";
       sel.innerHTML = "";
 
-      if (!PRODUCTS.length){
+      let list = PRODUCTS;
+      if (filterVal) list = list.filter(p => p.modelo === filterVal);
+
+      if (!list.length){
         const opt = document.createElement("option");
         opt.value = NEW_VALUE;
         opt.textContent = "➕ Nuevo producto…";
@@ -825,7 +851,7 @@
         return;
       }
 
-      for (const p of PRODUCTS){
+      for (const p of list){
         const opt = document.createElement("option");
         opt.value = p.codigo;
         opt.textContent = `${p.nombre} (${p.codigo})`;
@@ -895,6 +921,8 @@
       document.getElementById("proNota").value = "";
       document.getElementById("proNewModelo").value = "";
       document.getElementById("proNewColor").value = "";
+      document.getElementById("proFilterModelo").value = "";
+      fillDropdown("pro");
       hideMsg("proMsg");
       updateProductosCalc();
       onProductChange("pro");
@@ -1046,11 +1074,13 @@
     }
 
     function refreshLinesDropdowns(){
-      const selects = document.querySelectorAll(".lnProducto");
-      selects.forEach(sel => {
-        const current = sel.value;
-        fillLineSelect(sel);
-        if ([...sel.options].some(o => o.value === current)) sel.value = current;
+      const lines = document.querySelectorAll(".line");
+      lines.forEach(ln => {
+        const filterSel = ln.querySelector(".lnFilterModelo");
+        const prodSel = ln.querySelector(".lnProducto");
+        const currentProd = prodSel.value;
+        fillLineSelect(prodSel, filterSel ? filterSel.value : "");
+        if ([...prodSel.options].some(o => o.value === currentProd)) prodSel.value = currentProd;
       });
       recalcPack();
     }
@@ -1103,8 +1133,13 @@
 
       wrap.appendChild(div);
 
+      const filterSel = div.querySelector(".lnFilterModelo");
+      const modelos = [...new Set(PRODUCTS.map(p => p.modelo).filter(Boolean))].sort();
+      filterSel.innerHTML = '<option value="">Todos los modelos</option>';
+      modelos.forEach(m => filterSel.appendChild(new Option(m, m)));
+
       const sel = div.querySelector(".lnProducto");
-      fillLineSelect(sel);
+      fillLineSelect(sel, "");
       if (sel.options.length) sel.selectedIndex = 0;
 
       updateRemoveButtons();
@@ -1140,16 +1175,26 @@
       document.getElementById("btnAddLine").disabled = lines.length >= MAX_LINES;
     }
 
-    function fillLineSelect(sel){
+    function filterLineSelect(filterEl) {
+      const line = filterEl.closest('.line');
+      const prodSel = line.querySelector('.lnProducto');
+      fillLineSelect(prodSel, filterEl.value);
+      recalcPack();
+    }
+
+    function fillLineSelect(sel, filterVal = ""){
       sel.innerHTML = "";
-      if (!PRODUCTS.length){
+      let list = PRODUCTS;
+      if (filterVal) list = list.filter(p => p.modelo === filterVal);
+
+      if (!list.length){
         const opt = document.createElement("option");
         opt.value = "";
         opt.textContent = "No hay productos";
         sel.appendChild(opt);
         return;
       }
-      PRODUCTS.forEach(p => {
+      list.forEach(p => {
         const opt = document.createElement("option");
         opt.value = p.codigo;
         opt.textContent = `${p.nombre} (${p.codigo})`;
@@ -1648,3 +1693,23 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
