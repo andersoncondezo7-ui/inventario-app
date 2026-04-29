@@ -664,6 +664,51 @@
     const MAX_LINES = 5;
     let CURRENT_INVENTORY = []; // Guarda el inventario para el buscador
 
+    // ==========================================
+    // CONEXIÓN GITHUB <-> GOOGLE APPS SCRIPT
+    // ==========================================
+    // ⚠️ IMPORTANTE: Pon aquí la URL de tu Web App de Google Apps Script
+    const API_URL = "https://script.google.com/macros/s/AKfycbyd35oCOe3xLc_3rJ__KacKV-LQ5QUEQftGt__H1tb99S1WZCbS9P6TQtXYY17jrvtnfQ/exec"; 
+    const API_TOKEN = "inv_9Gk2pQ7xWm3vT1sL8nZ0aR6cY5uE4oP2iK_2026";
+
+    // Simulador de google.script.run para funcionar fuera de Google (en GitHub)
+    const google = {
+      script: {
+        get run() {
+          const chain = {
+            _success: null, _failure: null,
+            withSuccessHandler(cb) { this._success = cb; return this; },
+            withFailureHandler(cb) { this._failure = cb; return this; }
+          };
+          return new Proxy(chain, {
+            get(target, prop) {
+              if (prop in target) return target[prop];
+              return function(...args) {
+                let payloadObj = {};
+                if (['getVentasPacks', 'getGastos'].includes(prop)) payloadObj = { limit: args[0] };
+                else if (['getVentasDiariasRango', 'getRentabilidadProductosRango'].includes(prop)) payloadObj = { desde: args[0], hasta: args[1] };
+                else if (prop === 'getAlertasRotacion') payloadObj = { diasVentana: args[0], umbralDias: args[1] };
+                else payloadObj = args[0] || {};
+
+                const qs = `?action=${prop}&token=${API_TOKEN}`;
+                fetch(API_URL + qs, {
+                  method: 'POST', redirect: 'follow',
+                  headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Evita bloqueos de CORS
+                  body: JSON.stringify(payloadObj)
+                })
+                .then(r => r.json())
+                .then(res => {
+                  if (res.ok) { if (target._success) target._success(res.data); } 
+                  else { if (target._failure) target._failure(res.error || "Error del servidor"); }
+                })
+                .catch(err => { if (target._failure) target._failure(err.message || String(err)); });
+              };
+            }
+          });
+        }
+      }
+    };
+
     window.addEventListener("load", () => {
       setPill("Cargando…");
       loadProducts(() => {
@@ -1587,6 +1632,27 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
 
 
 
