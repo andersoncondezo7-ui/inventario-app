@@ -676,15 +676,17 @@
       script: {
         get run() {
           const state = { success: null, failure: null };
-          const runner = {
-            withSuccessHandler(cb) { state.success = cb; return runner; },
-            withFailureHandler(cb) { state.failure = cb; return runner; }
-          };
-          return new Proxy(runner, {
+          const proxy = new Proxy({}, {
             get(target, prop) {
-              if (prop in target) return target[prop];
-              if (typeof prop === "symbol") return undefined;
-              return function(...args) {
+              if (prop === 'withSuccessHandler') {
+                return (cb) => { state.success = cb; return proxy; };
+              }
+              if (prop === 'withFailureHandler') {
+                return (cb) => { state.failure = cb; return proxy; };
+              }
+              if (typeof prop === 'symbol' || prop === 'toJSON') return undefined;
+              
+              return (...args) => {
                 let payloadObj = {};
                 if (['getVentasPacks', 'getGastos'].includes(prop)) payloadObj = { limit: args[0] };
                 else if (['getVentasDiariasRango', 'getRentabilidadProductosRango'].includes(prop)) payloadObj = { desde: args[0], hasta: args[1] };
@@ -706,6 +708,7 @@
               };
             }
           });
+          return proxy;
         }
       }
     };
