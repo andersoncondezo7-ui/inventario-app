@@ -1922,6 +1922,10 @@
       document.getElementById("btnBulkConfirm").disabled = valid.length === 0;
     }
 
+    // Máximo de filas por request: el payload viaja en la URL (por la redirección de Apps Script),
+    // así que con listas grandes hay que partir el envío en lotes para no pasarnos del largo máximo de URL.
+    const BULK_CHUNK_SIZE = 25;
+
     function confirmarCargaMasiva() {
       if (!BULK_READY_ITEMS.length) return;
       const modo = document.getElementById("bulkModo").value;
@@ -1930,22 +1934,41 @@
       hideMsg("bulkMsg");
 
       const items = BULK_READY_ITEMS.map(({ _existing, ...rest }) => rest);
+      const chunks = [];
+      for (let i = 0; i < items.length; i += BULK_CHUNK_SIZE) chunks.push(items.slice(i, i + BULK_CHUNK_SIZE));
 
-      google.script.run
-        .withSuccessHandler(res => {
-          showMsg("bulkMsg", "ok", `Listo: ${res.creados} nuevos, ${res.actualizados} actualizados` + (res.errores && res.errores.length ? `, ${res.errores.length} con error.` : "."));
+      const totals = { creados: 0, actualizados: 0, sinCambio: 0, errores: [] };
+
+      function procesarLote(idx) {
+        if (idx >= chunks.length) {
+          showMsg("bulkMsg", "ok", `Listo: ${totals.creados} nuevos, ${totals.actualizados} actualizados` + (totals.errores.length ? `, ${totals.errores.length} con error.` : "."));
           document.getElementById("bulkPreviewWrap").innerHTML = "";
           document.getElementById("bulkFileName").textContent = "";
           document.getElementById("bulkGridWrap").innerHTML = "";
           BULK_READY_ITEMS = [];
           BULK_RAW_ROWS = null;
           loadProducts(() => refreshInventory());
-        })
-        .withFailureHandler(err => {
-          btn.disabled = false;
-          showMsg("bulkMsg", "bad", "Error al guardar: " + (err?.message || err));
-        })
-        .bulkUpdateInventario({ modo, items });
+          return;
+        }
+
+        if (chunks.length > 1) showMsg("bulkMsg", "ok", `Guardando lote ${idx + 1} de ${chunks.length}…`);
+
+        google.script.run
+          .withSuccessHandler(res => {
+            totals.creados += res.creados || 0;
+            totals.actualizados += res.actualizados || 0;
+            totals.sinCambio += res.sinCambio || 0;
+            if (res.errores && res.errores.length) totals.errores = totals.errores.concat(res.errores);
+            procesarLote(idx + 1);
+          })
+          .withFailureHandler(err => {
+            btn.disabled = false;
+            showMsg("bulkMsg", "bad", `Error al guardar (lote ${idx + 1} de ${chunks.length}): ` + (err?.message || err));
+          })
+          .bulkUpdateInventario({ modo, items: chunks[idx] });
+      }
+
+      procesarLote(0);
     }
 
     function resetBulkForm() {
