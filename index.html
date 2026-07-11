@@ -1230,7 +1230,7 @@
     // CONEXIÓN GITHUB <-> GOOGLE APPS SCRIPT
     // ==========================================
     // ⚠️ IMPORTANTE: Pon aquí la URL de tu Web App de Google Apps Script
-    const API_URL = "https://script.google.com/macros/s/AKfycbyd35oCOe3xLc_3rJ__KacKV-LQ5QUEQftGt__H1tb99S1WZCbS9P6TQtXYY17jrvtnfQ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycby96q3BUEbRRjcs3_dcWTlOfgUMtK_7eKLEnHKnLIWnPtgHmg-nyf4dG5WDMJN7B5kblA/exec";
     const API_TOKEN = "inv_9Gk2pQ7xWm3vT1sL8nZ0aR6cY5uE4oP2iK_2026";
 
     // Simulador de google.script.run para funcionar fuera de Google (en GitHub)
@@ -1882,10 +1882,10 @@
         });
       });
 
-      renderBulkPreview(valid, errores, modo);
+      renderBulkPreview(valid, errores, modo, rawItems.length);
     }
 
-    function renderBulkPreview(valid, errores, modo) {
+    function renderBulkPreview(valid, errores, modo, totalLeidas) {
       const wrap = document.getElementById("bulkPreviewWrap");
       let nuevos = 0, actualiza = 0;
       const cols = "1.2fr .6fr 1fr .6fr 1.2fr";
@@ -1904,10 +1904,11 @@
         </div>`;
       }).join("");
 
-      let html = `<div class="info"><div>Resumen</div><div class="right"><strong>${nuevos} nuevos · ${actualiza} actualizaciones · ${errores.length} errores</strong></div></div>`;
+      let html = `<div class="info"><div>Filas leídas del archivo</div><div class="right"><strong>${totalLeidas || (valid.length + errores.length)}</strong></div></div>`;
+      html += `<div class="info"><div>Resumen</div><div class="right"><strong>${nuevos} nuevos · ${actualiza} actualizaciones · ${errores.length} errores</strong></div></div>`;
 
       if (errores.length) {
-        html += `<div class="msg bad" style="margin-top:10px;">${errores.map(escapeHtml).join("<br>")}</div>`;
+        html += `<div class="msg bad" style="margin-top:10px;"><strong>⚠️ ${errores.length} fila(s) no se van a guardar:</strong><br>${errores.map(escapeHtml).join("<br>")}</div>`;
       }
 
       if (valid.length) {
