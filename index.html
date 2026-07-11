@@ -2124,6 +2124,9 @@
             </div>
           </div>
 
+          <button type="button" class="secondary miniBtn lnMultiColorBtn" onclick="toggleMultiColor(this)" disabled style="width:100%; margin-top:10px;">🎨 Elegir varios colores de este modelo</button>
+          <div class="lnMultiColorBox hidden" style="margin-top:10px;"></div>
+
           <div class="row cols2" style="margin-top:10px;">
             <div>
               <label>Cantidad</label>
@@ -2295,7 +2298,114 @@
         if (colores.includes(current)) colorSel.value = current;
       }
 
+      const multiBtn = lineEl.querySelector(".lnMultiColorBtn");
+      if (multiBtn) multiBtn.disabled = !modelo || !talla || colores.length < 2;
+
       onLineColorChange(colorSel);
+    }
+
+    // Permite, dentro de una sola línea, marcar varios colores del mismo modelo/talla
+    // de una vez (útil al vender un pack de 3/6/12 del mismo modelo en distintos colores):
+    // la línea actual toma el primer color elegido y se crean líneas nuevas para el resto,
+    // ya con familia/variante/talla preconfiguradas.
+    function familiaForModelo_(modelo) {
+      for (const f of VENTA_FAMILIAS) {
+        if (f.variantes.some(v => v.modelo === modelo)) return f.familia;
+      }
+      return null;
+    }
+
+    function setLineModeloTalla_(lineEl, modelo, talla) {
+      const familia = familiaForModelo_(modelo);
+      if (!familia) return false;
+
+      const famSel = lineEl.querySelector(".lnFamilia");
+      famSel.value = familia;
+      populateLineVariantes(lineEl);
+
+      const varSel = lineEl.querySelector(".lnVariante");
+      if (!varSel.disabled) varSel.value = modelo;
+      populateLineTallas(lineEl);
+
+      const tallaSel = lineEl.querySelector(".lnTalla");
+      tallaSel.value = talla;
+      populateLineColores(lineEl);
+
+      return true;
+    }
+
+    function toggleMultiColor(btn) {
+      const lineEl = btn.closest(".line");
+      const box = lineEl.querySelector(".lnMultiColorBox");
+
+      if (!box.classList.contains("hidden")) {
+        box.classList.add("hidden");
+        box.innerHTML = "";
+        return;
+      }
+
+      const modelo = lineEl.querySelector(".lnVariante").value;
+      const talla = lineEl.querySelector(".lnTalla").value;
+      if (!modelo || !talla) return;
+
+      const colores = [...new Set(PRODUCTS.filter(p => p.modelo === modelo && p.talla === talla && Number(p.stock) > 0).map(p => p.color).filter(Boolean))];
+      if (!colores.length) {
+        box.innerHTML = '<div class="small">Sin colores con stock para esta talla.</div>';
+        box.classList.remove("hidden");
+        return;
+      }
+
+      let html = '<div class="small" style="margin-bottom:8px;">Marca los colores que quieres agregar de "' + escapeHtml(modelo) + ' / ' + escapeHtml(talla) + '" (ajusta la cantidad de cada uno si no es 1):</div>';
+      colores.forEach(c => {
+        const prod = PRODUCTS.find(p => p.modelo === modelo && p.talla === talla && p.color === c);
+        const stockC = Number(prod ? prod.stock : 0);
+        html += `<label style="display:flex; align-items:center; gap:8px; margin-top:6px; cursor:pointer;">
+          <input type="checkbox" class="mcColorChk" data-color="${escapeHtml(c)}" style="width:auto;" />
+          <span style="flex:1; font-size:13px;">${escapeHtml(c)} <span class="small">(stock: ${stockC})</span></span>
+          <input type="number" class="mcColorQty" min="1" step="1" value="1" style="width:70px; padding:8px;" onclick="event.stopPropagation()" />
+        </label>`;
+      });
+      html += '<div class="actions" style="margin-top:10px;"><button type="button" class="miniBtn" onclick="aplicarMultiColor(this)">✅ Agregar colores marcados</button></div>';
+
+      box.innerHTML = html;
+      box.classList.remove("hidden");
+    }
+
+    function aplicarMultiColor(btn) {
+      const box = btn.closest(".lnMultiColorBox");
+      const lineEl = box.closest(".line");
+      const modelo = lineEl.querySelector(".lnVariante").value;
+      const talla = lineEl.querySelector(".lnTalla").value;
+
+      const seleccion = [...box.querySelectorAll(".mcColorChk")]
+        .filter(chk => chk.checked)
+        .map(chk => ({
+          color: chk.dataset.color,
+          cantidad: Math.max(1, Number(chk.closest("label").querySelector(".mcColorQty").value) || 1)
+        }));
+
+      if (!seleccion.length) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+
+      const first = seleccion[0];
+      lineEl.querySelector(".lnColor").value = first.color;
+      onLineColorChange(lineEl.querySelector(".lnColor"));
+      lineEl.querySelector(".lnCantidad").value = first.cantidad;
+
+      const wrap = document.getElementById("linesWrap");
+      for (let i = 1; i < seleccion.length; i++) {
+        if (wrap.querySelectorAll(".line").length >= MAX_LINES) break;
+        addLine();
+        const nuevas = wrap.querySelectorAll(".line");
+        const nuevaLine = nuevas[nuevas.length - 1];
+        setLineModeloTalla_(nuevaLine, modelo, talla);
+        nuevaLine.querySelector(".lnColor").value = seleccion[i].color;
+        onLineColorChange(nuevaLine.querySelector(".lnColor"));
+        nuevaLine.querySelector(".lnCantidad").value = seleccion[i].cantidad;
+      }
+
+      box.classList.add("hidden");
+      box.innerHTML = "";
+      recalcPack();
     }
 
     function onLineColorChange() {
@@ -2476,7 +2586,7 @@
         .withSuccessHandler(res => {
           document.getElementById("btnVentaPack").disabled = false;
 
-          if (res && res.ok) {
+          if (res && res.packId) {
             showMsg("venMsg", "ok", `Venta guardada. Pack: ${res.packId} | Costo: ${money(res.costo_total)} | Ganancia: ${money(res.utilidad_total)}`);
             loadProducts(() => { refreshInventory(); loadVentasPacks(); loadDashboard(); loadAnalitica(); });
             resetVentaPack();
