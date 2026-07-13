@@ -17,24 +17,26 @@
 
   <style>
     :root {
-      /* Boutique Lingerie Theme: Dark Charcoal & Rose Gold */
-      --bg-gradient-top: #130f10;
-      --bg-gradient-bottom: #1c1516;
-      --card-bg: rgba(30, 22, 23, 0.75);
-      --card-border: rgba(216, 164, 143, 0.15); /* Rose gold tint */
-      --muted: #b59f9e;
-      --text: #f9f5f4;
-      --ok: #2fd07a;
-      --bad: #e07a8b; /* softer red/blush for error */
-      --warning: #d4a373;
-      --line: rgba(216, 164, 143, 0.12);
-      --btn: linear-gradient(135deg, #d8a48f, #b3735e); /* Rose Gold gradient */
-      --btn-hover: linear-gradient(135deg, #e3bba9, #c48b78);
-      --chip: rgba(216, 164, 143, 0.12);
+      /* Tema claro femenino/pastel: fondo blanco, acentos en rosa/malva */
+      --bg-gradient-top: #ffffff;
+      --bg-gradient-bottom: #fdf5f8;
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --card-border: rgba(214, 83, 125, 0.18); /* Rosa pastel */
+      --muted: #96788a;
+      --text: #3a2634;
+      --ok: #16a34a;
+      --bad: #dc2626;
+      --warning: #d97706;
+      --line: rgba(214, 83, 125, 0.18);
+      --btn: linear-gradient(135deg, #f2a6c6, #d6537d); /* Rosa pastel */
+      --btn-hover: linear-gradient(135deg, #f7c1d9, #e07a9e);
+      --chip: rgba(214, 83, 125, 0.08);
+      --accent: #be3455;
+      --accent-light: #d6537d;
       --radius: 18px;
-      --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.4);
+      --shadow-soft: 0 10px 30px rgba(107, 44, 68, 0.08);
       --glass-blur: blur(16px);
-      
+
       --font-title: 'Playfair Display', serif;
       --font-body: 'Montserrat', system-ui, -apple-system, sans-serif;
     }
@@ -75,10 +77,10 @@
       padding: 16px 20px;
       padding-top: calc(16px + env(safe-area-inset-top));
       border-bottom: 1px solid var(--line);
-      background: rgba(19, 15, 16, 0.85);
+      background: rgba(255, 255, 255, 0.85);
       backdrop-filter: var(--glass-blur);
       -webkit-backdrop-filter: var(--glass-blur);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 4px 30px rgba(15, 23, 42, 0.06);
     }
 
     .title {
@@ -87,7 +89,7 @@
       font-weight: 700;
       letter-spacing: 0.5px;
       margin: 0;
-      background: linear-gradient(90deg, #f3d1c4, #d8a48f);
+      background: linear-gradient(90deg, #be3455, #d6537d);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -104,9 +106,9 @@
     .pill {
       font-size: 11px;
       font-weight: 600;
-      color: #d8a48f;
-      background: rgba(216, 164, 143, 0.08);
-      border: 1px solid rgba(216, 164, 143, 0.2);
+      color: #d6537d;
+      background: rgba(214, 83, 125, 0.08);
+      border: 1px solid rgba(214, 83, 125, 0.2);
       padding: 6px 14px;
       border-radius: 999px;
       white-space: nowrap;
@@ -137,7 +139,7 @@
       padding: 9px 16px;
       border-radius: 999px;
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(214, 83, 125, 0.05);
       color: var(--muted);
       font-size: 12px;
       font-weight: 600;
@@ -150,7 +152,7 @@
       background: var(--btn);
       color: #fff;
       border-color: transparent;
-      box-shadow: 0 4px 15px rgba(216, 164, 143, 0.25);
+      box-shadow: 0 4px 15px rgba(214, 83, 125, 0.25);
     }
 
     @keyframes fadeInSlideUp {
@@ -175,7 +177,7 @@
       font-size: 1.35rem;
       font-weight: 600;
       margin: 0 0 20px;
-      color: #f3d1c4;
+      color: #be3455;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -196,7 +198,7 @@
     input, select, textarea {
       width: 100%;
       border: 1px solid var(--line);
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(214, 83, 125, 0.04);
       color: var(--text);
       padding: 14px 16px;
       border-radius: 12px;
@@ -208,13 +210,13 @@
     }
 
     input:focus, select:focus, textarea:focus {
-      border-color: #d8a48f;
-      background: rgba(0, 0, 0, 0.35);
-      box-shadow: 0 0 0 3px rgba(216, 164, 143, 0.1);
+      border-color: #d6537d;
+      background: rgba(214, 83, 125, 0.07);
+      box-shadow: 0 0 0 3px rgba(214, 83, 125, 0.15);
     }
     
     input::placeholder, textarea::placeholder {
-      color: rgba(181, 159, 158, 0.5);
+      color: rgba(100, 116, 139, 0.6);
       font-weight: 400;
     }
 
@@ -245,7 +247,7 @@
       justify-content: space-between;
       gap: 12px;
       padding: 14px 16px;
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(214, 83, 125, 0.04);
       border: 1px solid var(--line);
       border-radius: 12px;
       margin-top: 14px;
@@ -282,7 +284,7 @@
       text-transform: uppercase;
       min-height: 48px;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 15px rgba(216, 164, 143, 0.25);
+      box-shadow: 0 4px 15px rgba(214, 83, 125, 0.25);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -292,31 +294,110 @@
     button:hover:not(:disabled) {
       background: var(--btn-hover);
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(216, 164, 143, 0.35);
+      box-shadow: 0 8px 25px rgba(214, 83, 125, 0.35);
     }
     
     button:active:not(:disabled) {
       transform: translateY(1px) scale(0.98);
-      box-shadow: 0 2px 10px rgba(216, 164, 143, 0.2);
+      box-shadow: 0 2px 10px rgba(214, 83, 125, 0.2);
     }
 
     button.secondary {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(214, 83, 125, 0.06);
       border: 1px solid var(--line);
       box-shadow: none;
       color: var(--text);
     }
 
-    button.packSizeBtn {
+    /* Botones de selección única (modelo / talla) */
+    .btnGroupWrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    button.choiceBtn {
       flex: 0 0 auto;
-      min-width: 44px;
-      padding: 10px 14px;
+      background: rgba(214, 83, 125, 0.06);
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 11px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0;
+      min-height: 0;
+      box-shadow: none;
+    }
+    button.choiceBtn:hover:not(:disabled) {
+      background: rgba(214, 83, 125, 0.12);
+      transform: none;
+      box-shadow: none;
+    }
+    button.choiceBtn.active {
+      background: var(--btn);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(214, 83, 125, 0.3);
+    }
+    button.choiceBtn:disabled { opacity: 0.35; }
+
+    /* Filas de color con cantidad (Ventas) */
+    .colorRow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(214, 83, 125, 0.03);
+      margin-top: 8px;
+    }
+    .colorRowName { flex: 1; font-weight: 600; font-size: 13px; color: var(--text); }
+    .colorRowQty { width: 76px; padding: 8px; text-align: center; }
+
+    /* Filas del carrito de venta */
+    .cartRow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(214, 83, 125, 0.03);
+      margin-top: 8px;
+    }
+    .cartRow.cartRow-bad {
+      border-color: rgba(224, 122, 139, 0.4);
+      background: rgba(224, 122, 139, 0.08);
+    }
+    .cartRowInfo { flex: 1; min-width: 0; }
+    .cartRowName {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cartRowMoney {
+      font-weight: 700;
+      font-size: 13px;
+      color: #be3455;
       white-space: nowrap;
     }
-    
+    .cartRowDel {
+      flex: 0 0 auto;
+      width: 32px;
+      height: 32px;
+      min-height: 0;
+      padding: 0;
+      border-radius: 10px;
+      background: rgba(220, 38, 38, 0.1);
+      color: #dc2626;
+      box-shadow: none;
+      font-size: 14px;
+    }
+
     button.secondary:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(216, 164, 143, 0.3);
+      background: rgba(214, 83, 125, 0.1);
+      border-color: rgba(214, 83, 125, 0.3);
     }
 
     button:disabled {
@@ -349,15 +430,15 @@
     }
 
     .msg.ok {
-      border-color: rgba(47, 208, 122, 0.3);
-      color: #8bebb9;
-      background: rgba(47, 208, 122, 0.1);
+      border-color: rgba(22, 163, 74, 0.3);
+      color: #15803d;
+      background: rgba(22, 163, 74, 0.08);
     }
 
     .msg.bad {
-      border-color: rgba(224, 122, 139, 0.3);
-      color: #f3b6c0;
-      background: rgba(224, 122, 139, 0.1);
+      border-color: rgba(220, 38, 38, 0.3);
+      color: #b91c1c;
+      background: rgba(220, 38, 38, 0.08);
     }
 
     .text-bad { color: var(--bad); }
@@ -367,9 +448,9 @@
     .newbox {
       margin-top: 14px;
       padding: 18px;
-      border: 1px dashed rgba(216, 164, 143, 0.3);
+      border: 1px dashed rgba(214, 83, 125, 0.3);
       border-radius: 12px;
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(214, 83, 125, 0.04);
     }
 
     .right { text-align: right; }
@@ -395,12 +476,12 @@
       right: 0;
       bottom: 0;
       z-index: 50;
-      background: rgba(19, 15, 16, 0.9);
+      background: rgba(255, 255, 255, 0.9);
       backdrop-filter: var(--glass-blur);
       -webkit-backdrop-filter: var(--glass-blur);
       border-top: 1px solid var(--line);
       padding-bottom: env(safe-area-inset-bottom);
-      box-shadow: 0 -4px 30px rgba(0,0,0,0.3);
+      box-shadow: 0 -4px 30px rgba(15, 23, 42, 0.08);
     }
 
     .tabs-inner {
@@ -446,13 +527,13 @@
       transform: translateX(-50%) scaleX(0);
       width: 30px;
       height: 2px;
-      background: #d8a48f;
+      background: #d6537d;
       border-radius: 0 0 4px 4px;
       transition: transform 0.3s ease;
     }
 
     .tab.active {
-      color: #f3d1c4;
+      color: #be3455;
     }
     
     .tab.active::before {
@@ -477,7 +558,7 @@
       border: 1px solid var(--line);
       border-radius: 12px;
       overflow: hidden;
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(214, 83, 125, 0.03);
     }
 
     .trow {
@@ -491,16 +572,16 @@
     }
 
     .trow.head {
-      background: rgba(216, 164, 143, 0.05);
+      background: rgba(214, 83, 125, 0.05);
       border-top: 0;
-      color: #d8a48f;
+      color: #d6537d;
       font-weight: 600;
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .name { font-weight: 600; color: #fff; }
+    .name { font-weight: 600; color: var(--text); }
 
     @media (max-width: 500px) {
       .trow {
@@ -518,13 +599,13 @@
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: 16px;
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(214, 83, 125, 0.03);
       margin-top: 14px;
       transition: transform 0.3s ease, border-color 0.3s ease;
     }
     
     .line:focus-within {
-      border-color: rgba(216, 164, 143, 0.4);
+      border-color: rgba(214, 83, 125, 0.4);
     }
 
     .lineTop {
@@ -537,7 +618,7 @@
 
     .lineTop .tag {
       font-weight: 700;
-      color: #d8a48f;
+      color: #d6537d;
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -557,14 +638,14 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 18px;
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(214, 83, 125, 0.03);
       margin-top: 14px;
       transition: background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
     }
 
     .packCard:hover {
-      background: rgba(216, 164, 143, 0.05);
-      border-color: rgba(216, 164, 143, 0.3);
+      background: rgba(214, 83, 125, 0.05);
+      border-color: rgba(214, 83, 125, 0.3);
       transform: translateY(-2px);
     }
 
@@ -587,14 +668,14 @@
       font-family: var(--font-title);
       font-weight: 700;
       font-size: 17px;
-      box-shadow: 0 4px 14px rgba(216, 164, 143, 0.3);
+      box-shadow: 0 4px 14px rgba(214, 83, 125, 0.3);
     }
 
     .packHeadInfo { flex: 1; min-width: 0; }
 
     .packCliente {
       font-weight: 700;
-      color: #fff;
+      color: var(--text);
       font-size: 15px;
       white-space: nowrap;
       overflow: hidden;
@@ -627,7 +708,7 @@
       text-align: center;
       padding: 10px 4px;
       border-radius: 12px;
-      background: rgba(0, 0, 0, 0.18);
+      background: rgba(214, 83, 125, 0.05);
       border: 1px solid var(--line);
     }
 
@@ -646,9 +727,9 @@
       color: var(--text);
     }
 
-    .packStat.money .val { color: #f3d1c4; }
-    .packStat.profit .val.pos { color: #8bebb9; }
-    .packStat.profit .val.neg { color: #f3b6c0; }
+    .packStat.money .val { color: #be3455; }
+    .packStat.profit .val.pos { color: #15803d; }
+    .packStat.profit .val.neg { color: #b91c1c; }
 
     .packToggle {
       margin-top: 12px;
@@ -662,7 +743,7 @@
       transition: color 0.2s ease;
     }
 
-    .packToggle:hover { color: #d8a48f; }
+    .packToggle:hover { color: #d6537d; }
 
     /* Tarjeta simple (Gastos) */
     .packTop {
@@ -672,7 +753,7 @@
       gap: 12px;
     }
 
-    .packId { font-family: var(--font-title); font-weight: 700; font-size: 16px; color: #f3d1c4; }
+    .packId { font-family: var(--font-title); font-weight: 700; font-size: 16px; color: #be3455; }
 
     .packMeta {
       color: var(--muted);
@@ -703,7 +784,7 @@
       gap: 8px;
       font-size: 13px;
       padding: 6px 0;
-      color: #e2e8f0;
+      color: var(--text);
     }
 
     /* Bar chart */
@@ -713,7 +794,7 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       overflow: hidden;
-      background: rgba(0,0,0,0.3);
+      background: rgba(214, 83, 125, 0.08);
     }
     .barInner {
       height: 100%;
@@ -724,10 +805,61 @@
     @media (max-width:480px) {
       .actions button { flex: 1 1 100%; }
     }
+
+    /* Pantalla de acceso (contraseña del dueño) */
+    .loginGate {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(180deg, var(--bg-gradient-top), var(--bg-gradient-bottom));
+    }
+    .loginGate.hidden { display: none !important; }
+    .loginCard {
+      width: 100%;
+      max-width: 360px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: var(--glass-blur);
+    }
+
+    /* Pedidos de clientes (verificación) */
+    .pedidoBadge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .pedidoBadge.pendiente { background: rgba(217, 119, 6, 0.12); color: #b45309; }
+    .pedidoBadge.aprobado { background: rgba(22, 163, 74, 0.12); color: #15803d; }
+    .pedidoBadge.rechazado { background: rgba(220, 38, 38, 0.12); color: #b91c1c; }
   </style>
 </head>
 
 <body>
+  <div id="loginGate" class="loginGate">
+    <div class="loginCard">
+      <div class="title" style="font-size:1.5rem;">🔒 Panel del negocio</div>
+      <div class="small" style="margin:8px 0 20px;">Acceso solo para el dueño.</div>
+      <label>Contraseña</label>
+      <input id="loginPass" type="password" placeholder="••••••••" autocomplete="off" />
+      <div class="actions">
+        <button onclick="intentarLogin()">Entrar</button>
+      </div>
+      <div id="loginMsg" class="msg bad hidden"></div>
+    </div>
+  </div>
+
   <div class="app">
     <div class="topbar">
       <div>
@@ -916,7 +1048,7 @@
         <!-- NUEVO: Alerta de reposición automática -->
         <div id="reponerBox" class="msg bad hidden" style="margin-top:12px; margin-bottom:12px;">
           <strong style="color:var(--bad);">⚠️ Lista de Compras (Bajo Stock):</strong>
-          <ul id="reponerList" style="margin: 5px 0 0 20px; padding: 0; color:#ffd1d9; font-size:13px;"></ul>
+          <ul id="reponerList" style="margin: 5px 0 0 20px; padding: 0; color:#b91c1c; font-size:13px;"></ul>
         </div>
 
         <!-- NUEVO: Buscador de inventario -->
@@ -941,93 +1073,62 @@
       </section>
 
       <section id="screenIngresoVentas" class="card hidden">
-        <h2>🧾 Ingresar ventas (packs)</h2>
-        <div class="small">1. Elige cuántas prendas lleva la venta. 2. Por cada una: modelo → talla → color → cantidad. Si repites una combinación, se combina automáticamente.</div>
+        <h2>🧾 Ingresar ventas</h2>
+        <div class="small">Empieza con los datos del cliente y luego elige modelo → talla → colores con su cantidad → agregar. Si te equivocas, borra esa prenda con ✖.</div>
 
-        <div style="margin-top:10px;">
-          <label>Cantidad de prendas</label>
-          <div class="actions" style="margin-top:0;">
-            <button class="secondary packSizeBtn" data-n="1" onclick="setPackSize(1)">1</button>
-            <button class="secondary packSizeBtn" data-n="2" onclick="setPackSize(2)">2</button>
-            <button class="secondary packSizeBtn" data-n="3" onclick="setPackSize(3)">3</button>
-            <button class="secondary packSizeBtn" data-n="4" onclick="setPackSize(4)">4</button>
-            <button class="secondary packSizeBtn" data-n="5" onclick="setPackSize(5)">5</button>
-            <button class="secondary packSizeBtn" data-n="6" onclick="setPackSize(6)">6</button>
-            <button class="secondary packSizeBtn" data-n="12" onclick="setPackSize(12)">12</button>
-            <button class="secondary packSizeBtn" data-n="24" onclick="setPackSize(24)">24</button>
+        <div class="row cols2" style="margin-top:14px;">
+          <div>
+            <label>Nombre del cliente</label>
+            <input id="cNombre" placeholder="Ej: María Pérez" oninput="actualizarHeaderCliente()" />
           </div>
-          <div class="small" style="margin-top:6px;">6 = media docena · 12 = docena · 24 = 2 docenas</div>
+          <div>
+            <label>Celular del cliente</label>
+            <input id="cCelular" type="tel" placeholder="Ej: 987654321" oninput="actualizarHeaderCliente()" />
+          </div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <label>1. Modelo</label>
+          <div id="modeloBtnsWrap" class="btnGroupWrap"></div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <label>2. Talla</label>
+          <div id="tallaBtnsWrap" class="btnGroupWrap"><div class="small">— elige un modelo primero —</div></div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <label>3. Colores y cantidades</label>
+          <input id="colorSearch" type="text" placeholder="🔍 Buscar color… (opcional)" oninput="renderColorList()" style="margin-bottom:10px;" />
+          <div id="colorListWrap"><div class="small">— elige modelo y talla primero —</div></div>
         </div>
 
         <div class="info" style="margin-top:14px;">
-          <div>Unidades en este pack</div>
+          <div>Vas a agregar</div>
+          <div class="right"><strong id="qPreviewResumen">—</strong></div>
+        </div>
+
+        <div class="actions">
+          <button id="btnAgregarCarrito" onclick="agregarAlCarrito()" disabled>➕ Agregar al pedido</button>
+        </div>
+
+        <div class="info" style="margin-top:20px;">
+          <div id="carritoHeaderLabel">🛒 Prendas en esta venta</div>
           <div class="right"><strong id="venUnidadesTotal">0</strong></div>
         </div>
-
-        <div id="linesWrap" style="margin-top:14px;"></div>
-
-        <div class="actions">
-          <button class="secondary" id="btnAddLine" onclick="addLine()">➕ Agregar otra combinación</button>
-        </div>
-
-        <div class="row cols2" style="margin-top:10px;">
-          <div>
-            <label>Total calculado</label>
-            <input id="venTotalCalc" disabled />
-          </div>
-          <div>
-            <label>Total pagado</label>
-            <input id="venTotalPaid" type="number" step="0.01" min="0" placeholder="Ej: 85.00" />
-          </div>
-        </div>
-
-        <!-- NUEVO: Método de Pago -->
-        <div class="row cols2" style="margin-top:10px;">
-          <div>
-            <label>Método de Pago</label>
-            <select id="venMetodoPago">
-              <option value="Efectivo" selected>💵 Efectivo</option>
-              <option value="Yape">🟣 Yape</option>
-              <option value="Plin">🔵 Plin</option>
-              <option value="Transferencia">🏦 Transferencia</option>
-              <option value="Tarjeta">💳 Tarjeta (POS)</option>
-            </select>
-          </div>
-          <div>
-            <label>Método de envío</label>
-            <select id="venMetodoEnvio">
-              <option value="Recojo en tienda" selected>🏬 Recojo en tienda</option>
-              <option value="Motorizado">🏍️ Motorizado</option>
-              <option value="Shalom">📦 Shalom</option>
-              <option value="Otro">✏️ Otro</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- NUEVO: Datos del cliente -->
-        <div class="row cols2" style="margin-top:10px;">
-          <div>
-            <label>Nombre del cliente (opcional)</label>
-            <input id="venClienteNombre" placeholder="Ej: Juan Pérez" />
-          </div>
-          <div>
-            <label>Celular (opcional)</label>
-            <input id="venClienteCelular" type="tel" placeholder="Ej: 987654321" />
-          </div>
-        </div>
-
-        <div style="margin-top:10px;">
-          <label>Nota (opcional)</label>
-          <input id="venNota" placeholder="Cliente/canal, etc." />
-        </div>
-
         <div class="info">
-          <div>Costo total: <strong id="venCostoTotal">—</strong></div>
-          <div class="right">Ganancia: <strong id="venProfit">—</strong></div>
+          <div>Monto pagado</div>
+          <div class="right"><strong id="carritoMontoResumen">S/ 0.00</strong></div>
+        </div>
+        <div id="carritoWrap" style="margin-top:8px;"></div>
+
+        <div style="margin-top:14px;">
+          <label>Monto de venta</label>
+          <input id="venTotalPaid" type="number" step="0.01" min="0" placeholder="Ej: 85.00" oninput="recalcPack()" />
         </div>
 
         <div class="actions">
-          <button id="btnVentaPack" onclick="submitVentaPack()">Guardar pack</button>
+          <button id="btnVentaPack" onclick="submitVentaPack()">Guardar venta</button>
           <button class="secondary" onclick="resetVentaPack()">Limpiar</button>
         </div>
 
@@ -1058,6 +1159,17 @@
 
         <div id="packsWrap" style="margin-top:14px;"></div>
         <div id="packsMsg" class="msg hidden"></div>
+      </section>
+
+      <section id="screenVerificarPedidos" class="card hidden">
+        <h2>📥 Pedidos de clientes</h2>
+        <div class="small">Pedidos enviados hoy desde el link público. Revisa que los datos estén correctos antes de aprobar — recién ahí se descuenta del stock y se registra como venta.</div>
+        <div class="actions" style="margin-top:14px;">
+          <button class="secondary" onclick="loadPedidosDelDia()">Actualizar</button>
+        </div>
+
+        <div id="pedidosWrap" style="margin-top:14px;"></div>
+        <div id="pedidosMsg" class="msg hidden"></div>
       </section>
 
       <section id="screenIngresoGastos" class="card hidden">
@@ -1223,7 +1335,6 @@
   <script>
     let PRODUCTS = [];
     const NEW_VALUE = "__NEW__";
-    const MAX_LINES = 24;
     let CURRENT_INVENTORY = []; // Guarda el inventario para el buscador
 
     // ==========================================
@@ -1275,7 +1386,8 @@
       }
     };
 
-    window.addEventListener("load", () => {
+    // La app real solo arranca después de pasar la contraseña (ver bloque de login más abajo).
+    function arrancarApp() {
       setPill("Cargando…");
       renderSubTabs("IngresoProductos", "Productos");
       loadProducts(() => {
@@ -1285,6 +1397,7 @@
         loadGastos();
         loadDashboard();
         loadAnalitica();
+        loadPedidosDelDia();
         setPill("Listo");
       });
       bindProductosLive();
@@ -1294,7 +1407,36 @@
         paid.addEventListener("input", recalcPack);
         paid.addEventListener("change", recalcPack);
       }
+    }
+
+    window.addEventListener("load", () => {
+      if (sessionStorage.getItem("admin_auth") === "1") {
+        document.getElementById("loginGate").classList.add("hidden");
+        arrancarApp();
+      } else {
+        document.getElementById("loginPass").addEventListener("keydown", e => {
+          if (e.key === "Enter") intentarLogin();
+        });
+      }
     });
+
+    // Gate de acceso: solo evita que alguien casual abra esta página. La protección real es que
+    // este archivo (con el token de administrador) nunca se comparte con clientes — solo pedido.html
+    // (que lleva un token distinto y limitado) se comparte públicamente.
+    const ADMIN_PASSWORD = "70860109";
+
+    function intentarLogin() {
+      const val = document.getElementById("loginPass").value;
+      const msg = document.getElementById("loginMsg");
+      if (val === ADMIN_PASSWORD) {
+        sessionStorage.setItem("admin_auth", "1");
+        document.getElementById("loginGate").classList.add("hidden");
+        arrancarApp();
+      } else {
+        msg.textContent = "Contraseña incorrecta.";
+        msg.classList.remove("hidden");
+      }
+    }
 
     function setPill(t) { document.getElementById("statusPill").textContent = t; }
     function showMsg(id, type, text) {
@@ -1320,7 +1462,8 @@
       ],
       Ventas: [
         { name: "IngresoVentas", label: "🧾 Nueva venta" },
-        { name: "ResumenVentas", label: "📚 Historial" }
+        { name: "ResumenVentas", label: "📚 Historial" },
+        { name: "VerificarPedidos", label: "📥 Pedidos clientes" }
       ]
     };
     const SCREEN_TO_GROUP = {};
@@ -1330,7 +1473,7 @@
 
     function go(name) {
       const screens = [
-        "IngresoProductos", "CargaMasiva", "Inventario", "IngresoVentas", "ResumenVentas",
+        "IngresoProductos", "CargaMasiva", "Inventario", "IngresoVentas", "ResumenVentas", "VerificarPedidos",
         "IngresoGastos", "ResumenGastos", "ResumenGlobal", "Analitica"
       ];
       const tabs = ["Productos", "Ventas", "IngresoGastos", "ResumenGastos", "ResumenGlobal", "Analitica"];
@@ -1356,8 +1499,9 @@
         IngresoProductos: ["Ingresar productos", "Captura"],
         CargaMasiva: ["Carga masiva", "Modelo × talla × color"],
         Inventario: ["Inventario", "Stock y precios"],
-        IngresoVentas: ["Ingresar ventas", "Packs"],
+        IngresoVentas: ["Ingresar ventas", "Carrito rápido"],
         ResumenVentas: ["Resumen ventas", "Por pack"],
+        VerificarPedidos: ["Pedidos de clientes", "Verificar y aprobar"],
         IngresoGastos: ["Ingresar gastos", "Operativos"],
         ResumenGastos: ["Resumen gastos", "Lista y total"],
         ResumenGlobal: ["Resumen global", "Resultados netos"],
@@ -1368,6 +1512,7 @@
 
       if (name === "Inventario") refreshInventory();
       if (name === "ResumenVentas") loadVentasPacks();
+      if (name === "VerificarPedidos") loadPedidosDelDia();
       if (name === "ResumenGastos") loadGastos();
       if (name === "ResumenGlobal") loadDashboard();
       if (name === "Analitica") loadAnalitica();
@@ -1628,6 +1773,7 @@
       { modelo: "Bikini Brillo", colores: ["Rojo", "Negro", "Azulino", "Blanco", "Vino", "Palorosa"] },
       { modelo: "Semihilo Brillo", colores: ["Rojo", "Negro", "Azulino", "Blanco", "Vino", "Palorosa"] },
       { modelo: "Hilo Encaje", colores: ["Gris", "Azulino", "Beige", "Rojo", "Negro", "Blanco", "Turquesa", "Palorosa"] },
+      { modelo: "Bikini Raya", colores: ["Azulino", "Rojo", "Blanco", "Beige", "Negro", "Gris"] },
       { modelo: "Semihilo rayas", colores: ["Azulino", "Rojo", "Blanco", "Beige", "Negro", "Gris"] }
     ];
     const BULK_TALLAS_COLS = ["S", "M", "L", "XL", "STD"];
@@ -2064,521 +2210,263 @@
     // =========================
     // Ventas (packs) + combinando duplicados
     // =========================
+    // Modelo de "carrito": cada producto agregado es una fila independiente en VENTA_CART.
+    // Flujo: modelo -> talla -> color(es) -> cantidad -> Agregar. El carrito crece de a uno,
+    // se ve el total en vivo y cada fila se borra con un solo clic si hay un error.
+    // Catálogo fijo de modelos para la venta rápida (botones, sin desplegables).
+    // "modelo" debe coincidir tal cual con el campo Modelo guardado en Productos.
+    const VENTA_MODELOS = [
+      { label: "Deportivo", modelo: "Deportivo" },
+      { label: "Cachetero", modelo: "Cachetero" },
+      { label: "Semi hilo clásico", modelo: "Semi hilo clasico" },
+      { label: "Semi hilo francés", modelo: "Semi hilo frances" },
+      { label: "Bikini francés", modelo: "Bikini frances" },
+      { label: "Bikini clásico", modelo: "Bikini clasico" },
+      { label: "Bikini Brillo", modelo: "Bikini Brillo" },
+      { label: "Semihilo Brillo", modelo: "Semihilo Brillo" },
+      { label: "Hilo Encaje", modelo: "Hilo Encaje" },
+      { label: "Bikini Raya", modelo: "Bikini Raya" },
+      { label: "Semihilo rayas", modelo: "Semihilo rayas" }
+    ];
+
+    let VENTA_CART = [];
+    let SELECTED_MODELO = "";
+    let SELECTED_TALLA = "";
+    let COLOR_QTY_MAP = {}; // color -> cantidad tipeada, antes de agregar al carrito
+
     function initLines() {
-      setPackSize(1);
-    }
-
-    function setPackSize(n) {
-      document.querySelectorAll(".packSizeBtn").forEach(b => {
-        b.classList.toggle("secondary", Number(b.dataset.n) !== n);
-      });
-
-      const wrap = document.getElementById("linesWrap");
-      wrap.innerHTML = "";
-      for (let i = 0; i < n; i++) addLine();
-      updateRemoveButtons();
-      recalcPack();
+      VENTA_CART = [];
+      SELECTED_MODELO = "";
+      SELECTED_TALLA = "";
+      COLOR_QTY_MAP = {};
+      renderModeloBtns();
+      renderTallaBtns();
+      renderColorList();
+      renderCarrito();
     }
 
     function refreshLinesDropdowns() {
-      const lines = document.querySelectorAll(".line");
-      lines.forEach(ln => populateLineFamilias(ln));
+      renderModeloBtns();
+      renderTallaBtns();
+      renderColorList();
       recalcPack();
     }
 
-    function addLine() {
-      const wrap = document.getElementById("linesWrap");
-      const count = wrap.querySelectorAll(".line").length;
-      if (count >= MAX_LINES) return;
-
-      const div = document.createElement("div");
-      div.className = "line";
-      div.dataset.idx = String(count + 1);
-
-      div.innerHTML = `
-        <div class="lineTop">
-          <div class="tag">Producto ${count + 1}</div>
-          <button class="secondary miniBtn" onclick="removeLine(this)">✖</button>
-        </div>
-
-        <div class="row">
-          <div class="row cols2">
-            <div>
-              <label>1. Familia</label>
-              <select class="lnFamilia" onchange="onLineFamiliaChange(this)"></select>
-            </div>
-            <div>
-              <label>2. Variante</label>
-              <select class="lnVariante" onchange="onLineVarianteChange(this)" disabled></select>
-            </div>
-          </div>
-
-          <div class="row cols2" style="margin-top:10px;">
-            <div>
-              <label>3. Talla</label>
-              <select class="lnTalla" onchange="onLineTallaChange(this)" disabled></select>
-            </div>
-            <div>
-              <label>4. Color</label>
-              <select class="lnColor" onchange="onLineColorChange(this)" disabled></select>
-            </div>
-          </div>
-
-          <button type="button" class="secondary miniBtn lnMultiColorBtn" onclick="toggleMultiColor(this)" disabled style="width:100%; margin-top:10px;">🎨 Elegir varios colores de este modelo</button>
-          <div class="lnMultiColorBox hidden" style="margin-top:10px;"></div>
-
-          <div class="row cols2" style="margin-top:10px;">
-            <div>
-              <label>Cantidad</label>
-              <input class="lnCantidad" type="number" step="1" min="1" value="1" oninput="recalcPack()" />
-            </div>
-            <div>
-              <label>Precio unitario (opcional)</label>
-              <input class="lnPrecio" type="number" step="0.01" min="0" placeholder="Vacío = precio venta" oninput="recalcPack()" />
-            </div>
-          </div>
-
-          <div class="info" style="margin-top:10px;">
-            <div>Stock: <strong class="lnStock">—</strong></div>
-            <div class="right">Venta sugerida: <strong class="lnVentaSug">—</strong></div>
-          </div>
-
-          <div class="info">
-            <div>Costo unit: <strong class="lnCostoUnit">—</strong></div>
-            <div class="right">Subtotal lista: <strong class="lnSub">—</strong></div>
-          </div>
-
-          <div class="small">Duplicados se combinan automáticamente.</div>
-        </div>
-      `;
-
-      wrap.appendChild(div);
-      populateLineFamilias(div);
-
-      updateRemoveButtons();
-      recalcPack();
+    function renderModeloBtns() {
+      const wrap = document.getElementById("modeloBtnsWrap");
+      wrap.innerHTML = VENTA_MODELOS.map(m => {
+        const hayStock = PRODUCTS.some(p => p.modelo === m.modelo && Number(p.stock) > 0);
+        return `<button type="button" class="choiceBtn ${SELECTED_MODELO === m.modelo ? "active" : ""}" ${hayStock ? "" : "disabled"} onclick="seleccionarModelo('${escapeHtml(m.modelo)}')">${escapeHtml(m.label)}</button>`;
+      }).join("");
     }
 
-    function removeLine(btn) {
-      const wrap = document.getElementById("linesWrap");
-      const lines = wrap.querySelectorAll(".line");
-      if (lines.length <= 1) return;
-
-      btn.closest(".line").remove();
-
-      wrap.querySelectorAll(".line").forEach((ln, i) => {
-        ln.dataset.idx = String(i + 1);
-        ln.querySelector(".tag").textContent = "Producto " + (i + 1);
-      });
-
-      updateRemoveButtons();
-      recalcPack();
+    function seleccionarModelo(modelo) {
+      SELECTED_MODELO = modelo;
+      SELECTED_TALLA = "";
+      COLOR_QTY_MAP = {};
+      renderModeloBtns();
+      renderTallaBtns();
+      renderColorList();
     }
 
-    function updateRemoveButtons() {
-      const wrap = document.getElementById("linesWrap");
-      const lines = wrap.querySelectorAll(".line");
-      const canRemove = lines.length > 1;
-
-      lines.forEach(ln => {
-        const b = ln.querySelector("button.miniBtn");
-        b.disabled = !canRemove;
-      });
-
-      document.getElementById("btnAddLine").disabled = lines.length >= MAX_LINES;
-    }
-
-    // Cascada por línea: Familia -> Variante -> Talla -> Color, solo combinaciones con stock disponible.
-    // Familia agrupa los modelos compuestos (Semihilo/Bikini clásico|francés|Brillo|Raya); el resto tiene una sola variante.
-    const VENTA_FAMILIAS = [
-      { familia: "Deportivo", variantes: [{ label: "Deportivo", modelo: "Deportivo" }] },
-      { familia: "Cachetero", variantes: [{ label: "Cachetero", modelo: "Cachetero" }] },
-      { familia: "Semihilo", variantes: [
-          { label: "Clásico", modelo: "Semi hilo clasico" },
-          { label: "Francés", modelo: "Semi hilo frances" },
-          { label: "Brillo", modelo: "Semihilo Brillo" },
-          { label: "Rayas", modelo: "Semihilo rayas" }
-        ] },
-      { familia: "Bikini", variantes: [
-          { label: "Clásico", modelo: "Bikini clasico" },
-          { label: "Francés", modelo: "Bikini frances" },
-          { label: "Brillo", modelo: "Bikini Brillo" }
-        ] },
-      { familia: "Hilo Encaje", variantes: [{ label: "Hilo Encaje", modelo: "Hilo Encaje" }] }
-    ];
-
-    function populateLineFamilias(lineEl) {
-      const sel = lineEl.querySelector(".lnFamilia");
-      const current = sel.value;
-
-      const modelosConStock = new Set(PRODUCTS.filter(p => Number(p.stock) > 0).map(p => p.modelo));
-      const familiasConStock = VENTA_FAMILIAS.filter(f => f.variantes.some(v => modelosConStock.has(v.modelo)));
-
-      sel.innerHTML = '<option value="">Selecciona…</option>';
-      familiasConStock.forEach(f => sel.appendChild(new Option(f.familia, f.familia)));
-      if (familiasConStock.some(f => f.familia === current)) sel.value = current;
-
-      onLineFamiliaChange(sel);
-    }
-
-    function onLineFamiliaChange(sel) {
-      populateLineVariantes(sel.closest(".line"));
-    }
-
-    function populateLineVariantes(lineEl) {
-      const familia = lineEl.querySelector(".lnFamilia").value;
-      const varSel = lineEl.querySelector(".lnVariante");
-      const current = varSel.value;
-
-      const modelosConStock = new Set(PRODUCTS.filter(p => Number(p.stock) > 0).map(p => p.modelo));
-      const familiaObj = VENTA_FAMILIAS.find(f => f.familia === familia);
-      const variantesConStock = familiaObj ? familiaObj.variantes.filter(v => modelosConStock.has(v.modelo)) : [];
-
-      varSel.innerHTML = "";
-      if (!familia || !variantesConStock.length) {
-        varSel.innerHTML = '<option value="">— sin stock —</option>';
-        varSel.disabled = true;
-      } else if (variantesConStock.length === 1) {
-        varSel.appendChild(new Option(variantesConStock[0].label, variantesConStock[0].modelo));
-        varSel.value = variantesConStock[0].modelo;
-        varSel.disabled = true;
-      } else {
-        varSel.disabled = false;
-        varSel.innerHTML = '<option value="">Selecciona…</option>';
-        variantesConStock.forEach(v => varSel.appendChild(new Option(v.label, v.modelo)));
-        if (variantesConStock.some(v => v.modelo === current)) varSel.value = current;
-      }
-
-      onLineVarianteChange(varSel);
-    }
-
-    function onLineVarianteChange(sel) {
-      populateLineTallas(sel.closest(".line"));
-    }
-
-    function populateLineTallas(lineEl) {
-      const modelo = lineEl.querySelector(".lnVariante").value;
-      const tallaSel = lineEl.querySelector(".lnTalla");
-      const current = tallaSel.value;
-
-      const tallas = [...new Set(PRODUCTS.filter(p => p.modelo === modelo && Number(p.stock) > 0).map(p => p.talla).filter(Boolean))];
-
-      if (!modelo || !tallas.length) {
-        tallaSel.innerHTML = '<option value="">— sin stock —</option>';
-        tallaSel.disabled = true;
-      } else {
-        tallaSel.disabled = false;
-        tallaSel.innerHTML = '<option value="">Selecciona…</option>';
-        tallas.forEach(t => tallaSel.appendChild(new Option(t, t)));
-        if (tallas.includes(current)) tallaSel.value = current;
-      }
-
-      onLineTallaChange(tallaSel);
-    }
-
-    function onLineTallaChange(sel) {
-      populateLineColores(sel.closest(".line"));
-    }
-
-    function populateLineColores(lineEl) {
-      const modelo = lineEl.querySelector(".lnVariante").value;
-      const talla = lineEl.querySelector(".lnTalla").value;
-      const colorSel = lineEl.querySelector(".lnColor");
-      const current = colorSel.value;
-
-      const colores = [...new Set(PRODUCTS.filter(p => p.modelo === modelo && p.talla === talla && Number(p.stock) > 0).map(p => p.color).filter(Boolean))];
-
-      if (!modelo || !talla || !colores.length) {
-        colorSel.innerHTML = '<option value="">— sin stock —</option>';
-        colorSel.disabled = true;
-      } else {
-        colorSel.disabled = false;
-        colorSel.innerHTML = '<option value="">Selecciona…</option>';
-        colores.forEach(c => colorSel.appendChild(new Option(c, c)));
-        if (colores.includes(current)) colorSel.value = current;
-      }
-
-      const multiBtn = lineEl.querySelector(".lnMultiColorBtn");
-      if (multiBtn) multiBtn.disabled = !modelo || !talla || colores.length < 2;
-
-      onLineColorChange(colorSel);
-    }
-
-    // Permite, dentro de una sola línea, marcar varios colores del mismo modelo/talla
-    // de una vez (útil al vender un pack de 3/6/12 del mismo modelo en distintos colores):
-    // la línea actual toma el primer color elegido y se crean líneas nuevas para el resto,
-    // ya con familia/variante/talla preconfiguradas.
-    function familiaForModelo_(modelo) {
-      for (const f of VENTA_FAMILIAS) {
-        if (f.variantes.some(v => v.modelo === modelo)) return f.familia;
-      }
-      return null;
-    }
-
-    function setLineModeloTalla_(lineEl, modelo, talla) {
-      const familia = familiaForModelo_(modelo);
-      if (!familia) return false;
-
-      const famSel = lineEl.querySelector(".lnFamilia");
-      famSel.value = familia;
-      populateLineVariantes(lineEl);
-
-      const varSel = lineEl.querySelector(".lnVariante");
-      if (!varSel.disabled) varSel.value = modelo;
-      populateLineTallas(lineEl);
-
-      const tallaSel = lineEl.querySelector(".lnTalla");
-      tallaSel.value = talla;
-      populateLineColores(lineEl);
-
-      return true;
-    }
-
-    function toggleMultiColor(btn) {
-      const lineEl = btn.closest(".line");
-      const box = lineEl.querySelector(".lnMultiColorBox");
-
-      if (!box.classList.contains("hidden")) {
-        box.classList.add("hidden");
-        box.innerHTML = "";
+    function renderTallaBtns() {
+      const wrap = document.getElementById("tallaBtnsWrap");
+      if (!SELECTED_MODELO) {
+        wrap.innerHTML = '<div class="small">— elige un modelo primero —</div>';
         return;
       }
 
-      const modelo = lineEl.querySelector(".lnVariante").value;
-      const talla = lineEl.querySelector(".lnTalla").value;
-      if (!modelo || !talla) return;
+      const tallas = [...new Set(PRODUCTS.filter(p => p.modelo === SELECTED_MODELO && Number(p.stock) > 0).map(p => p.talla).filter(Boolean))];
+      if (!tallas.length) {
+        wrap.innerHTML = '<div class="small">— sin stock para este modelo —</div>';
+        return;
+      }
 
-      const colores = [...new Set(PRODUCTS.filter(p => p.modelo === modelo && p.talla === talla && Number(p.stock) > 0).map(p => p.color).filter(Boolean))];
+      wrap.innerHTML = tallas.map(t =>
+        `<button type="button" class="choiceBtn ${SELECTED_TALLA === t ? "active" : ""}" onclick="seleccionarTalla('${escapeHtml(t)}')">${escapeHtml(t)}</button>`
+      ).join("");
+    }
+
+    function seleccionarTalla(talla) {
+      SELECTED_TALLA = talla;
+      COLOR_QTY_MAP = {};
+      renderTallaBtns();
+      renderColorList();
+    }
+
+    function renderColorList() {
+      const wrap = document.getElementById("colorListWrap");
+      const search = (document.getElementById("colorSearch").value || "").trim().toLowerCase();
+
+      if (!SELECTED_MODELO || !SELECTED_TALLA) {
+        wrap.innerHTML = '<div class="small">— elige modelo y talla primero —</div>';
+        updateQuickPreview();
+        return;
+      }
+
+      const colores = [...new Set(PRODUCTS.filter(p => p.modelo === SELECTED_MODELO && p.talla === SELECTED_TALLA && Number(p.stock) > 0).map(p => p.color).filter(Boolean))];
+      const filtrados = search ? colores.filter(c => c.toLowerCase().includes(search)) : colores;
+
       if (!colores.length) {
-        box.innerHTML = '<div class="small">Sin colores con stock para esta talla.</div>';
-        box.classList.remove("hidden");
+        wrap.innerHTML = '<div class="small">— sin colores con stock para esta talla —</div>';
+      } else if (!filtrados.length) {
+        wrap.innerHTML = `<div class="small">Sin resultados para "${escapeHtml(search)}".</div>`;
+      } else {
+        wrap.innerHTML = filtrados.map(c => {
+          const val = COLOR_QTY_MAP[c] || "";
+          return `<div class="colorRow">
+            <div class="colorRowName">${escapeHtml(c)}</div>
+            <input type="number" class="colorRowQty" min="0" step="1" placeholder="0" value="${escapeHtml(val)}" oninput="onColorQtyInput('${escapeHtml(c)}', this)" />
+          </div>`;
+        }).join("");
+      }
+
+      updateQuickPreview();
+    }
+
+    function onColorQtyInput(color, input) {
+      const val = input.value.trim();
+      if (val === "" || Number(val) <= 0) delete COLOR_QTY_MAP[color];
+      else COLOR_QTY_MAP[color] = val;
+      updateQuickPreview();
+    }
+
+    function updateQuickPreview() {
+      const entries = Object.entries(COLOR_QTY_MAP).filter(([, q]) => Number(q) > 0);
+      const resumenEl = document.getElementById("qPreviewResumen");
+      const btnAdd = document.getElementById("btnAgregarCarrito");
+
+      if (!SELECTED_MODELO || !SELECTED_TALLA || !entries.length) {
+        resumenEl.textContent = "—";
+        btnAdd.disabled = true;
         return;
       }
 
-      let html = '<div class="small" style="margin-bottom:8px;">Marca los colores que quieres agregar de "' + escapeHtml(modelo) + ' / ' + escapeHtml(talla) + '" (ajusta la cantidad de cada uno si no es 1):</div>';
-      colores.forEach(c => {
-        const prod = PRODUCTS.find(p => p.modelo === modelo && p.talla === talla && p.color === c);
-        const stockC = Number(prod ? prod.stock : 0);
-        html += `<label style="display:flex; align-items:center; gap:8px; margin-top:6px; cursor:pointer;">
-          <input type="checkbox" class="mcColorChk" data-color="${escapeHtml(c)}" style="width:auto;" />
-          <span style="flex:1; font-size:13px;">${escapeHtml(c)} <span class="small">(stock: ${stockC})</span></span>
-          <input type="number" class="mcColorQty" min="1" step="1" value="1" style="width:70px; padding:8px;" onclick="event.stopPropagation()" />
-        </label>`;
+      const totalPrendas = entries.reduce((sum, [, q]) => sum + Number(q), 0);
+      resumenEl.textContent = `${entries.length} color${entries.length > 1 ? "es" : ""} · ${totalPrendas} prenda${totalPrendas > 1 ? "s" : ""} en total`;
+      btnAdd.disabled = false;
+    }
+
+    function agregarAlCarrito() {
+      if (!SELECTED_MODELO || !SELECTED_TALLA) return;
+      const entries = Object.entries(COLOR_QTY_MAP).filter(([, q]) => Number(q) > 0);
+      if (!entries.length) return;
+
+      entries.forEach(([color, qty]) => {
+        const p = findProductByKey(SELECTED_MODELO, SELECTED_TALLA, color);
+        if (!p) return;
+        const cantidad = Number(qty);
+        const existing = VENTA_CART.find(it => it.codigo === p.codigo);
+        if (existing) existing.cantidad += cantidad;
+        else VENTA_CART.push({ codigo: p.codigo, cantidad, p });
       });
-      html += '<div class="actions" style="margin-top:10px;"><button type="button" class="miniBtn" onclick="aplicarMultiColor(this)">✅ Agregar colores marcados</button></div>';
 
-      box.innerHTML = html;
-      box.classList.remove("hidden");
+      // Reset rápido: limpia las cantidades marcadas para seguir agregando de inmediato,
+      // manteniendo modelo/talla para no repetir la selección si sigues con el mismo producto.
+      COLOR_QTY_MAP = {};
+      document.getElementById("colorSearch").value = "";
+      renderColorList();
+      renderCarrito();
     }
 
-    function aplicarMultiColor(btn) {
-      const box = btn.closest(".lnMultiColorBox");
-      const lineEl = box.closest(".line");
-      const modelo = lineEl.querySelector(".lnVariante").value;
-      const talla = lineEl.querySelector(".lnTalla").value;
+    function quitarDelCarrito(codigo) {
+      VENTA_CART = VENTA_CART.filter(it => it.codigo !== codigo);
+      renderCarrito();
+    }
 
-      const seleccion = [...box.querySelectorAll(".mcColorChk")]
-        .filter(chk => chk.checked)
-        .map(chk => ({
-          color: chk.dataset.color,
-          cantidad: Math.max(1, Number(chk.closest("label").querySelector(".mcColorQty").value) || 1)
-        }));
+    function renderCarrito() {
+      const wrap = document.getElementById("carritoWrap");
 
-      if (!seleccion.length) { box.classList.add("hidden"); box.innerHTML = ""; return; }
-
-      const first = seleccion[0];
-      lineEl.querySelector(".lnColor").value = first.color;
-      onLineColorChange(lineEl.querySelector(".lnColor"));
-      lineEl.querySelector(".lnCantidad").value = first.cantidad;
-
-      const wrap = document.getElementById("linesWrap");
-      for (let i = 1; i < seleccion.length; i++) {
-        if (wrap.querySelectorAll(".line").length >= MAX_LINES) break;
-        addLine();
-        const nuevas = wrap.querySelectorAll(".line");
-        const nuevaLine = nuevas[nuevas.length - 1];
-        setLineModeloTalla_(nuevaLine, modelo, talla);
-        nuevaLine.querySelector(".lnColor").value = seleccion[i].color;
-        onLineColorChange(nuevaLine.querySelector(".lnColor"));
-        nuevaLine.querySelector(".lnCantidad").value = seleccion[i].cantidad;
+      if (!VENTA_CART.length) {
+        wrap.innerHTML = '<div class="small">Aún no agregaste prendas.</div>';
+      } else {
+        wrap.innerHTML = VENTA_CART.map(it => {
+          const p = it.p;
+          const stock = Number(p.stock || 0);
+          const insuf = it.cantidad > stock;
+          return `<div class="cartRow ${insuf ? "cartRow-bad" : ""}">
+            <div class="cartRowInfo">
+              <div class="cartRowName">${escapeHtml(p.modelo)} · ${escapeHtml(p.talla)} · ${escapeHtml(p.color)}</div>
+              <div class="small">x${it.cantidad}${insuf ? " — stock insuficiente (" + stock + ")" : ""}</div>
+            </div>
+            <button type="button" class="cartRowDel" onclick="quitarDelCarrito('${p.codigo}')">✖</button>
+          </div>`;
+        }).join("");
       }
 
-      box.classList.add("hidden");
-      box.innerHTML = "";
+      actualizarHeaderCliente();
       recalcPack();
     }
 
-    function onLineColorChange() {
-      recalcPack();
-    }
-
-    function getLineRaw(lineEl) {
-      const modelo = lineEl.querySelector(".lnVariante").value;
-      const talla = lineEl.querySelector(".lnTalla").value;
-      const color = lineEl.querySelector(".lnColor").value;
-      const qty = Number(lineEl.querySelector(".lnCantidad").value || 0);
-      const precioCustomRaw = lineEl.querySelector(".lnPrecio").value;
-      const precioCustom = (precioCustomRaw !== "" && isFinite(Number(precioCustomRaw))) ? Number(precioCustomRaw) : null;
-      const p = (modelo && talla && color) ? findProductByKey(modelo, talla, color) : null;
-      const codigo = p ? p.codigo : "";
-      return { codigo, qty, precioCustom, p };
-    }
-
-    function getCombinedItemsFromUI() {
-      const wrap = document.getElementById("linesWrap");
-      const lineEls = [...wrap.querySelectorAll(".line")];
-
-      const map = new Map();
-
-      for (const ln of lineEls) {
-        const { codigo, qty, precioCustom, p } = getLineRaw(ln);
-        if (!codigo || !p) continue;
-        if (!isFinite(qty) || qty <= 0) continue;
-
-        const existing = map.get(codigo);
-        if (!existing) {
-          map.set(codigo, {
-            codigo,
-            qty,
-            priceSum: (precioCustom != null ? precioCustom * qty : 0),
-            customQty: (precioCustom != null ? qty : 0),
-            p
-          });
-        } else {
-          existing.qty += qty;
-          if (precioCustom != null) {
-            existing.priceSum += precioCustom * qty;
-            existing.customQty += qty;
-          }
-        }
-      }
-
-      const combined = [];
-      for (const v of map.values()) {
-        let precio_unitario = "";
-        if (v.customQty > 0) precio_unitario = v.priceSum / v.customQty;
-        combined.push({ codigo: v.codigo, cantidad: v.qty, precio_unitario, p: v.p });
-      }
-      return combined;
+    // Nombre + celular funcionan como encabezado/identificador del pedido: apenas se escriben,
+    // el panel del carrito pasa a mostrar "Pedido de <nombre/celular>" en vez del título genérico.
+    function actualizarHeaderCliente() {
+      const nombre = document.getElementById("cNombre").value.trim();
+      const celular = document.getElementById("cCelular").value.trim();
+      const partes = [nombre, celular].filter(Boolean).join(" · ");
+      document.getElementById("carritoHeaderLabel").textContent = partes ? `🛒 Pedido de ${partes}` : "🛒 Prendas en esta venta";
     }
 
     function recalcPack() {
       hideMsg("venMsg");
 
-      const wrap = document.getElementById("linesWrap");
-      const lineEls = [...wrap.querySelectorAll(".line")];
-
-      lineEls.forEach(ln => {
-        const { qty, precioCustom, p } = getLineRaw(ln);
-
-        const stockEl = ln.querySelector(".lnStock");
-        const ventaSugEl = ln.querySelector(".lnVentaSug");
-        const costoUnitEl = ln.querySelector(".lnCostoUnit");
-        const subEl = ln.querySelector(".lnSub");
-
-        if (!p) {
-          stockEl.textContent = "—";
-          ventaSugEl.textContent = "—";
-          costoUnitEl.textContent = "—";
-          subEl.textContent = "—";
-          return;
-        }
-
-        const stock = Number(p.stock || 0);
-        const ventaSug = Number(p.precio_venta || 0);
-        const costoUnit = Number(p.precio_compra || 0);
-
-        stockEl.textContent = String(stock);
-        ventaSugEl.textContent = money(ventaSug);
-        costoUnitEl.textContent = money(costoUnit);
-
-        const precioLista = (precioCustom != null) ? precioCustom : ventaSug;
-        const subtotal = (qty > 0) ? (precioLista * qty) : 0;
-
-        if (qty > stock) {
-          stockEl.innerHTML = `${stock} <span style="color:var(--bad); font-weight:900;">(insuf.)</span>`;
-        }
-        subEl.textContent = (qty > 0) ? money(subtotal) : "—";
-      });
-
-      const totalUnidades = lineEls.reduce((sum, ln) => sum + (Number(ln.querySelector(".lnCantidad").value) || 0), 0);
+      const totalUnidades = VENTA_CART.reduce((sum, it) => sum + it.cantidad, 0);
       document.getElementById("venUnidadesTotal").textContent = String(totalUnidades);
 
-      const combined = getCombinedItemsFromUI();
-      let totalLista = 0;
-      let costoTotal = 0;
-
-      combined.forEach(it => {
-        const p = it.p;
-        const ventaSug = Number(p.precio_venta || 0);
-        const costoUnit = Number(p.precio_compra || 0);
-
-        const precioLista = (it.precio_unitario !== "" && isFinite(Number(it.precio_unitario)))
-          ? Number(it.precio_unitario)
-          : ventaSug;
-
-        totalLista += precioLista * it.cantidad;
-        costoTotal += costoUnit * it.cantidad;
-      });
-
-      document.getElementById("venTotalCalc").value = money(totalLista);
-
-      const totalPagado = Number(document.getElementById("venTotalPaid").value || 0);
-      const ganancia = (isFinite(totalPagado) ? totalPagado : 0) - costoTotal;
-
-      document.getElementById("venCostoTotal").textContent = money(costoTotal);
-      document.getElementById("venProfit").textContent = (isFinite(ganancia)) ? money(ganancia) : "—";
+      const monto = Number(document.getElementById("venTotalPaid").value || 0);
+      document.getElementById("carritoMontoResumen").textContent = "S/ " + money(monto);
     }
 
     function resetVentaPack() {
+      VENTA_CART = [];
+      SELECTED_MODELO = "";
+      SELECTED_TALLA = "";
+      COLOR_QTY_MAP = {};
       document.getElementById("venTotalPaid").value = "";
-      document.getElementById("venNota").value = "";
-      document.getElementById("venClienteNombre").value = "";
-      document.getElementById("venClienteCelular").value = "";
-      document.getElementById("venMetodoEnvio").value = "Recojo en tienda";
+      document.getElementById("cNombre").value = "";
+      document.getElementById("cCelular").value = "";
+      document.getElementById("colorSearch").value = "";
       hideMsg("venMsg");
-      initLines();
+      renderModeloBtns();
+      renderTallaBtns();
+      renderColorList();
+      renderCarrito();
     }
 
     function submitVentaPack() {
       hideMsg("venMsg");
 
-      const combined = getCombinedItemsFromUI();
-
-      if (!combined.length) {
-        showMsg("venMsg", "bad", "Agrega al menos 1 producto con cantidad válida.");
-        return;
-      }
-      if (combined.length > MAX_LINES) {
-        showMsg("venMsg", "bad", `Máximo ${MAX_LINES} combinaciones distintas por venta.`);
+      if (!VENTA_CART.length) {
+        showMsg("venMsg", "bad", "Agrega al menos una prenda.");
         return;
       }
 
-      for (const it of combined) {
+      for (const it of VENTA_CART) {
         const stock = Number(it.p?.stock || 0);
         if (it.cantidad > stock) {
-          showMsg("venMsg", "bad", `Stock insuficiente en ${it.p.nombre}. Disponible: ${stock}`);
+          showMsg("venMsg", "bad", `Stock insuficiente en ${it.p.modelo} / ${it.p.color}. Disponible: ${stock}`);
           return;
         }
       }
 
-      const total_pagado = Number(document.getElementById("venTotalPaid").value);
-      if (!isFinite(total_pagado) || total_pagado < 0) {
-        showMsg("venMsg", "bad", "Total pagado inválido.");
+      const cliente_nombre = document.getElementById("cNombre").value.trim();
+      const cliente_celular = document.getElementById("cCelular").value.trim();
+      if (!cliente_nombre) {
+        showMsg("venMsg", "bad", "Ingresa el nombre del cliente.");
+        return;
+      }
+      if (!cliente_celular) {
+        showMsg("venMsg", "bad", "Ingresa el celular del cliente.");
         return;
       }
 
-      const nota = document.getElementById("venNota").value.trim();
-      const metodo_pago = document.getElementById("venMetodoPago").value;
-      const metodo_envio = document.getElementById("venMetodoEnvio").value;
-      const cliente_nombre = document.getElementById("venClienteNombre").value.trim();
-      const cliente_celular = document.getElementById("venClienteCelular").value.trim();
+      const total_pagado = Number(document.getElementById("venTotalPaid").value);
+      if (!isFinite(total_pagado) || total_pagado < 0) {
+        showMsg("venMsg", "bad", "Monto de venta inválido.");
+        return;
+      }
 
-      const items = combined.map(it => ({
-        codigo: it.codigo,
-        cantidad: it.cantidad,
-        precio_unitario: (it.precio_unitario !== "" && isFinite(Number(it.precio_unitario))) ? Number(it.precio_unitario) : ""
-      }));
+      const items = VENTA_CART.map(it => ({ codigo: it.codigo, cantidad: it.cantidad, precio_unitario: "" }));
 
       document.getElementById("btnVentaPack").disabled = true;
 
@@ -2587,7 +2475,7 @@
           document.getElementById("btnVentaPack").disabled = false;
 
           if (res && res.packId) {
-            showMsg("venMsg", "ok", `Venta guardada. Pack: ${res.packId} | Costo: ${money(res.costo_total)} | Ganancia: ${money(res.utilidad_total)}`);
+            showMsg("venMsg", "ok", `Venta guardada. Pack: ${res.packId}`);
             loadProducts(() => { refreshInventory(); loadVentasPacks(); loadDashboard(); loadAnalitica(); });
             resetVentaPack();
           } else {
@@ -2598,7 +2486,7 @@
           document.getElementById("btnVentaPack").disabled = false;
           showMsg("venMsg", "bad", err?.message || String(err));
         })
-        .addVentaPack({ items, total_pagado, nota, metodo_pago, metodo_envio, cliente_nombre, cliente_celular });
+        .addVentaPack({ items, total_pagado, nota: "", metodo_pago: "", metodo_envio: "", cliente_nombre, cliente_celular });
     }
 
     // =========================
@@ -2732,6 +2620,107 @@
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Ventas");
       XLSX.writeFile(wb, `ventas_${desde}_a_${hasta}.xlsx`);
+    }
+
+    // =========================
+    // Pedidos de clientes (pendientes de verificar/aprobar)
+    // =========================
+    function loadPedidosDelDia() {
+      hideMsg("pedidosMsg");
+      google.script.run
+        .withSuccessHandler(list => renderPedidos(Array.isArray(list) ? list : []))
+        .withFailureHandler(err => showMsg("pedidosMsg", "bad", err?.message || String(err)))
+        .getPedidosDelDia();
+    }
+
+    function renderPedidos(pedidos) {
+      const wrap = document.getElementById("pedidosWrap");
+      wrap.innerHTML = "";
+
+      if (!pedidos.length) {
+        wrap.innerHTML = '<div class="msg">Aún no hay pedidos de clientes hoy.</div>';
+        return;
+      }
+
+      const badgeClass = { "Pendiente": "pendiente", "Aprobado": "aprobado", "Rechazado": "rechazado" };
+
+      pedidos.forEach(pd => {
+        const dt = pd.timestamp ? new Date(pd.timestamp) : null;
+        const dateTxt = dt ? dt.toLocaleString("es-PE", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+
+        const card = document.createElement("div");
+        card.className = "packCard";
+        card.innerHTML = `
+          <div class="packHead">
+            <div class="packAvatar">${escapeHtml((pd.cliente_nombre || "?").charAt(0).toUpperCase())}</div>
+            <div class="packHeadInfo">
+              <div class="packCliente">${escapeHtml(pd.cliente_nombre || "Sin nombre")}</div>
+              <div class="packDate">${escapeHtml(dateTxt)} · ${escapeHtml(pd.cliente_celular || "")}</div>
+            </div>
+            <span class="pedidoBadge ${badgeClass[pd.estado] || ''}">${escapeHtml(pd.estado)}</span>
+          </div>
+
+          <div class="packChips">
+            <span class="chip">${escapeHtml(pd.metodo_pago || "")}</span>
+            <span class="chip">${escapeHtml(pd.metodo_envio || "")}</span>
+          </div>
+
+          <div style="margin-top:12px;">
+            ${(pd.items || []).map(it => `
+              <div class="packItemRow">
+                <div>${escapeHtml(it.modelo)} · ${escapeHtml(it.talla)} · ${escapeHtml(it.color)} <span class="chip">x${Number(it.cantidad || 0)}</span></div>
+              </div>
+            `).join("")}
+          </div>
+
+          <div class="info" style="margin-top:10px;">
+            <div>Total estimado</div>
+            <div class="right"><strong>S/ ${money(pd.total_estimado || 0)}</strong></div>
+          </div>
+
+          ${pd.nota ? `<div class="small" style="margin-top:6px;">Nota: ${escapeHtml(pd.nota)}</div>` : ""}
+          ${pd.estado === "Rechazado" && pd.motivo ? `<div class="small text-bad" style="margin-top:6px;">Motivo: ${escapeHtml(pd.motivo)}</div>` : ""}
+          ${pd.estado === "Aprobado" && pd.pack_id_venta ? `<div class="small" style="margin-top:6px;">Venta: ${escapeHtml(pd.pack_id_venta)}</div>` : ""}
+
+          ${pd.estado === "Pendiente" ? `
+            <div class="actions">
+              <button onclick="aprobarPedidoUI('${escapeHtml(pd.pedidoId)}', this)">✅ Aprobar</button>
+              <button class="secondary" onclick="rechazarPedidoUI('${escapeHtml(pd.pedidoId)}', this)">❌ Rechazar</button>
+            </div>
+          ` : ""}
+        `;
+        wrap.appendChild(card);
+      });
+    }
+
+    function aprobarPedidoUI(pedidoId, btn) {
+      btn.disabled = true;
+      google.script.run
+        .withSuccessHandler(() => {
+          showMsg("pedidosMsg", "ok", "Pedido aprobado y registrado como venta.");
+          loadPedidosDelDia();
+          loadProducts(() => { refreshInventory(); loadVentasPacks(); loadDashboard(); loadAnalitica(); });
+        })
+        .withFailureHandler(err => {
+          btn.disabled = false;
+          showMsg("pedidosMsg", "bad", err?.message || String(err));
+        })
+        .aprobarPedido({ pedidoId });
+    }
+
+    function rechazarPedidoUI(pedidoId, btn) {
+      const motivo = prompt("Motivo del rechazo (opcional):") || "";
+      btn.disabled = true;
+      google.script.run
+        .withSuccessHandler(() => {
+          showMsg("pedidosMsg", "ok", "Pedido rechazado.");
+          loadPedidosDelDia();
+        })
+        .withFailureHandler(err => {
+          btn.disabled = false;
+          showMsg("pedidosMsg", "bad", err?.message || String(err));
+        })
+        .rechazarPedido({ pedidoId, motivo });
     }
 
     // =========================
