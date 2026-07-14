@@ -622,6 +622,117 @@
       .chip { font-size: 9px; padding: 2px 6px; }
     }
 
+    /* Matriz de stock (Modelo × Talla × Color) */
+    .stock-legend-dot {
+      display: inline-block;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      margin: 0 4px 0 10px;
+      vertical-align: middle;
+    }
+    .stock-legend-dot:first-child { margin-left: 0; }
+    .stock-legend-dot.ok { background: var(--ok); }
+    .stock-legend-dot.warn { background: var(--warning); }
+    .stock-legend-dot.bad { background: var(--bad); }
+
+    .matrix-scroll {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: auto;
+      max-height: 68vh;
+      background: var(--card-bg);
+      box-shadow: var(--shadow-soft);
+    }
+
+    table.stock-matrix {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      font-size: 12.5px;
+      white-space: nowrap;
+    }
+
+    .stock-matrix th,
+    .stock-matrix td {
+      padding: 10px 12px;
+      text-align: center;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+    }
+
+    .stock-matrix thead th {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      background: linear-gradient(180deg, #fdeef4, #fbe3ec);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .stock-matrix .modelo-th,
+    .stock-matrix .talla-th {
+      text-align: left;
+      z-index: 4;
+    }
+
+    .stock-matrix .modelo-th { left: 0; min-width: 150px; }
+    .stock-matrix .talla-th { left: 150px; min-width: 60px; }
+
+    .stock-matrix .modelo-cell,
+    .stock-matrix .talla-cell {
+      position: sticky;
+      background: var(--card-bg);
+      font-weight: 600;
+      text-align: left;
+      z-index: 2;
+    }
+
+    .stock-matrix .modelo-cell {
+      left: 0;
+      color: var(--accent);
+      font-family: var(--font-title);
+      font-size: 13.5px;
+      border-right: 1px solid var(--card-border);
+      vertical-align: middle;
+    }
+
+    .stock-matrix .talla-cell {
+      left: 150px;
+      min-width: 60px;
+      color: var(--muted);
+      font-size: 12px;
+      border-right: 1px solid var(--card-border);
+    }
+
+    .stock-matrix .modelo-cell.zebra,
+    .stock-matrix .talla-cell.zebra { background: rgba(214, 83, 125, 0.05); }
+
+    .stock-matrix tr.zebra td.qty,
+    .stock-matrix tr.zebra td.na { background: rgba(214, 83, 125, 0.035); }
+
+    .stock-matrix td.qty { font-weight: 700; }
+    .stock-matrix td.qty.ok { color: var(--ok); }
+    .stock-matrix td.qty.warn { color: var(--warning); }
+    .stock-matrix td.qty.bad { color: var(--bad); background: rgba(220, 38, 38, 0.06); }
+    .stock-matrix td.na { color: #c9bcc4; font-weight: 400; }
+
+    .stock-matrix tbody tr:last-child td { border-bottom: 0; }
+    .stock-matrix th:last-child,
+    .stock-matrix td:last-child { border-right: 0; }
+
+    @media (max-width: 500px) {
+      table.stock-matrix { font-size: 11.5px; }
+      .stock-matrix th, .stock-matrix td { padding: 8px 9px; }
+      .stock-matrix .modelo-th { min-width: 110px; }
+      .stock-matrix .talla-th { left: 110px; }
+      .stock-matrix .talla-cell { left: 110px; }
+    }
+
     /* Pack Lines */
     .line {
       border: 1px solid var(--line);
@@ -1076,29 +1187,19 @@
           <button class="secondary" onclick="refreshInventory()">Actualizar</button>
         </div>
 
-        <!-- NUEVO: Alerta de reposición automática -->
-        <div id="reponerBox" class="msg bad hidden" style="margin-top:12px; margin-bottom:12px;">
-          <strong style="color:var(--bad);">⚠️ Lista de Compras (Bajo Stock):</strong>
-          <ul id="reponerList" style="margin: 5px 0 0 20px; padding: 0; color:#b91c1c; font-size:13px;"></ul>
-        </div>
-
-        <!-- NUEVO: Buscador de inventario -->
+        <!-- Buscador de inventario -->
         <div style="margin-bottom:12px;">
-          <input id="invSearch" type="text" placeholder="🔍 Buscar por nombre o código..."
+          <input id="invSearch" type="text" placeholder="🔍 Buscar por modelo o código..."
             oninput="filterInventory()" />
         </div>
 
-        <div class="table">
-          <div class="trow head">
-            <div>Modelo</div>
-            <div>Color</div>
-            <div class="right">Stock</div>
-            <div class="right">Compra</div>
-            <div class="right">Margen</div>
-            <div class="right">Venta</div>
-          </div>
-          <div id="invBody"></div>
+        <div class="small" style="margin-bottom:8px;">
+          <span class="stock-legend-dot ok"></span> Stock normal
+          <span class="stock-legend-dot warn"></span> Quedan 1-2
+          <span class="stock-legend-dot bad"></span> Sin stock
         </div>
+
+        <div id="invMatrixWrap" class="matrix-scroll"></div>
 
         <div class="small" style="margin-top:8px;">Producto | Stock | Compra | Margen | Venta</div>
       </section>
@@ -1450,11 +1551,15 @@
                 else payloadObj = args[0] || {};
 
                 // Se usa GET y el payload se envía en la URL para evitar que Google
-                // elimine los datos en su redirección (302) de CORS.
+                // elimine los datos en su redirección (302) de CORS. Como muchas
+                // llamadas (p.ej. getProducts) siempre tienen la misma URL, el
+                // navegador puede servir una respuesta de caché en vez de pedir
+                // datos frescos: se agrega "_ts" y "cache: no-store" para que
+                // cada llamada golpee siempre al servidor.
                 const payloadStr = encodeURIComponent(JSON.stringify(payloadObj));
-                const qs = `?action=${prop}&token=${currentApiToken()}&payload=${payloadStr}`;
+                const qs = `?action=${prop}&token=${currentApiToken()}&payload=${payloadStr}&_ts=${Date.now()}`;
 
-                fetch(API_URL + qs)
+                fetch(API_URL + qs, { cache: "no-store" })
                   .then(r => r.json())
                   .then(res => {
                     if (res.ok) { if (state.success) state.success(res.data); }
@@ -2242,7 +2347,6 @@
           document.getElementById("bulkGridWrap").innerHTML = "";
           BULK_READY_ITEMS = [];
           BULK_RAW_ROWS = null;
-          loadProducts(() => refreshInventory());
           return;
         }
 
@@ -2254,6 +2358,14 @@
             totals.actualizados += res.actualizados || 0;
             totals.sinCambio += res.sinCambio || 0;
             if (res.errores && res.errores.length) totals.errores = totals.errores.concat(res.errores);
+            // El backend ya devuelve el inventario recién escrito: se repinta al
+            // toque, sin pedirlo de nuevo por separado (evita la demora/caché
+            // que antes obligaba a recargar toda la página para verlo reflejado).
+            if (Array.isArray(res.inventario)) {
+              PRODUCTS = res.inventario;
+              CURRENT_INVENTORY = res.inventario;
+              renderInventory(CURRENT_INVENTORY);
+            }
             procesarLote(idx + 1);
           })
           .withFailureHandler(err => {
@@ -2292,67 +2404,76 @@
     function filterInventory() {
       const q = document.getElementById("invSearch").value.toLowerCase();
       const filtered = CURRENT_INVENTORY.filter(p =>
-        (p.nombre || "").toLowerCase().includes(q) ||
+        (p.modelo || "").toLowerCase().includes(q) ||
         (p.codigo || "").toLowerCase().includes(q)
       );
       renderInventory(filtered);
     }
 
+    // Matriz de stock: filas = Modelo (agrupado con rowspan) × Talla (S/M/L/XL fijo,
+    // + "Otras" solo si hay stock cargado con una talla distinta), columnas = Color
+    // (dinámico, según lo que exista en el inventario). "—" = esa combinación
+    // Modelo/Talla/Color nunca se registró; un número (aunque sea 0) = sí existe el SKU.
+    const TALLA_ORDEN_MATRIZ = ["S", "M", "L", "XL"];
+
     function renderInventory(inv) {
-      const body = document.getElementById("invBody");
-      body.innerHTML = "";
-      const reponerBox = document.getElementById("reponerBox");
-      const reponerList = document.getElementById("reponerList");
-      reponerList.innerHTML = "";
-      let lowStockCount = 0;
+      const wrap = document.getElementById("invMatrixWrap");
 
       if (!inv.length) {
-        const row = document.createElement("div");
-        row.className = "trow";
-        row.innerHTML = `<div class="name">Sin productos</div><div>—</div><div class="right">—</div><div class="right">—</div><div class="right">—</div><div class="right">—</div>`;
-        body.appendChild(row);
+        wrap.innerHTML = `<div class="small" style="padding:18px;text-align:center;">Sin productos</div>`;
         return;
       }
 
-      inv.sort((a, b) => (a.nombre || "").localeCompare(b.nombre || "", "es"));
+      const modelos = [];
+      const coloresSet = new Set();
+      const matrix = {};
+      const otrasPorModelo = {};
 
-      for (const p of inv) {
+      inv.forEach(p => {
+        const modelo = String(p.modelo || "Sin modelo").trim();
+        const color = String(p.color || "Sin color").trim();
+        const tallaRaw = String(p.talla || "").trim().toUpperCase();
+        const talla = TALLA_ORDEN_MATRIZ.includes(tallaRaw) ? tallaRaw : "OTRAS";
         const stock = Number(p.stock || 0);
-        const color = p.color || "";
-        const compra = Number(p.precio_compra || 0);
-        const margen = Number(p.margen_pct || 0);
-        const venta = Number(p.precio_venta || 0);
 
-        // Detectar stock bajo
-        if (stock <= 2) {
-          lowStockCount++;
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${escapeHtml(p.nombre)}</strong> - Quedan: ${stock}`;
-          reponerList.appendChild(li);
-        }
-        const stockClass = stock <= 0 ? "text-bad" : (stock <= 2 ? "text-warning" : "");
+        if (!matrix[modelo]) { matrix[modelo] = {}; modelos.push(modelo); }
+        if (!matrix[modelo][talla]) matrix[modelo][talla] = {};
+        matrix[modelo][talla][color] = (matrix[modelo][talla][color] || 0) + stock;
+        coloresSet.add(color);
+        if (talla === "OTRAS") otrasPorModelo[modelo] = true;
+      });
 
-        const row = document.createElement("div");
-        row.className = "trow";
-        row.innerHTML = `
-          <div>
-            <div class="name">${escapeHtml(p.modelo || "")} (${escapeHtml(p.talla || "")})</div>
-            <div class="chip">${escapeHtml(p.codigo || "")}</div>
-          </div>
-          <div>${escapeHtml(color)}</div>
-          <div class="right"><strong class="${stockClass}">${stock}</strong></div>
-          <div class="right">${money(compra)}</div>
-          <div class="right">${margen.toFixed(0)}%</div>
-          <div class="right"><strong>${money(venta)}</strong></div>
-        `;
-        body.appendChild(row);
-      }
+      modelos.sort((a, b) => a.localeCompare(b, "es"));
+      const colores = Array.from(coloresSet).sort((a, b) => a.localeCompare(b, "es"));
 
-      if (lowStockCount > 0) {
-        reponerBox.classList.remove("hidden");
-      } else {
-        reponerBox.classList.add("hidden");
-      }
+      let html = `<table class="stock-matrix"><thead><tr><th class="modelo-th">Modelo</th><th class="talla-th">Talla</th>`;
+      colores.forEach(c => { html += `<th>${escapeHtml(c)}</th>`; });
+      html += `</tr></thead><tbody>`;
+
+      modelos.forEach((modelo, mi) => {
+        const tallas = TALLA_ORDEN_MATRIZ.concat(otrasPorModelo[modelo] ? ["OTRAS"] : []);
+        const zebra = mi % 2 === 0 ? " zebra" : "";
+        tallas.forEach((talla, i) => {
+          html += `<tr class="${zebra}">`;
+          if (i === 0) {
+            html += `<td class="modelo-cell${zebra}" rowspan="${tallas.length}">${escapeHtml(modelo)}</td>`;
+          }
+          html += `<td class="talla-cell${zebra}">${talla === "OTRAS" ? "Otras" : talla}</td>`;
+          colores.forEach(color => {
+            const val = matrix[modelo][talla] ? matrix[modelo][talla][color] : undefined;
+            if (val === undefined) {
+              html += `<td class="qty na">—</td>`;
+            } else {
+              const cls = val <= 0 ? "bad" : (val <= 2 ? "warn" : "ok");
+              html += `<td class="qty ${cls}">${val}</td>`;
+            }
+          });
+          html += `</tr>`;
+        });
+      });
+
+      html += `</tbody></table>`;
+      wrap.innerHTML = html;
     }
 
     // =========================
