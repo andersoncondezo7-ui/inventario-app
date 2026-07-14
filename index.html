@@ -1103,6 +1103,44 @@
         <div class="small" style="margin-top:8px;">Producto | Stock | Compra | Margen | Venta</div>
       </section>
 
+      <section id="screenPorComprar" class="card hidden">
+        <h2>🛍 Por comprar</h2>
+        <div class="small">Prendas vendidas sin stock suficiente. Se registran solas cuando una venta se guarda aunque falte stock — cómpralas y marca el pedido como resuelto.</div>
+
+        <div class="actions" style="margin-top:14px;">
+          <button class="secondary" onclick="loadReposicionPendiente()">Actualizar</button>
+        </div>
+
+        <div class="small" style="margin-top:14px;">Resumen para ir a comprar (todo lo pendiente, sumado)</div>
+        <div id="reposicionResumenWrap" style="margin-top:8px;"></div>
+
+        <div class="actions hidden" id="reposicionWhatsappWrap" style="margin-top:10px;">
+          <button type="button" onclick="enviarPorComprarWhatsapp()">📲 Enviar lista por WhatsApp</button>
+        </div>
+
+        <div class="small" style="margin-top:20px;">Detalle por venta (para avisarle al cliente)</div>
+        <div id="reposicionDetalleWrap" style="margin-top:8px;"></div>
+
+        <div id="reposicionMsg" class="msg hidden"></div>
+      </section>
+
+      <section id="screenPreciosModelo" class="card hidden">
+        <h2>💲 Precios por cantidad</h2>
+        <div class="small">Define cuánto cobras por 1, 3, 6 y 12 unidades de cada modelo (deja vacío lo que no manejes). Esto no cambia el monto que ingresas al vender — solo se usa para mostrarte una ganancia de referencia mientras armas la venta.</div>
+
+        <div class="actions" style="margin-top:14px;">
+          <button class="secondary" onclick="loadPreciosModelo()">Actualizar</button>
+        </div>
+
+        <div id="preciosModeloWrap" style="margin-top:14px;"></div>
+
+        <div class="actions">
+          <button id="btnGuardarPrecios" onclick="guardarTodosPreciosModelo()">Guardar cambios</button>
+        </div>
+
+        <div id="preciosModeloMsg" class="msg hidden"></div>
+      </section>
+
       <section id="screenIngresoVentas" class="card hidden">
         <h2>🧾 Ingresar ventas</h2>
         <div class="small">Empieza con el celular del cliente y luego elige modelo → talla → colores con su cantidad → agregar. Si te equivocas, borra esa prenda con ✖.</div>
@@ -1147,9 +1185,21 @@
         </div>
         <div id="carritoWrap" style="margin-top:8px;"></div>
 
+        <div class="actions hidden" id="agregarOtroWrap" style="margin-top:10px;">
+          <button type="button" class="secondary" onclick="agregarOtroProducto()">➕ Agregar otro producto a esta venta</button>
+        </div>
+
         <div style="margin-top:14px;">
           <label>Monto de venta</label>
           <input id="venTotalPaid" type="number" step="0.01" min="0" placeholder="Ej: 85.00" oninput="recalcPack()" />
+        </div>
+
+        <div id="gananciaReferenciaBox" class="info hidden" style="margin-top:10px;">
+          <div>
+            <div>💡 Ganancia de referencia</div>
+            <div class="small" id="gananciaReferenciaSubtitulo">—</div>
+          </div>
+          <div class="right"><strong id="gananciaReferenciaValor">S/ 0.00</strong></div>
         </div>
 
         <div class="actions">
@@ -1428,11 +1478,13 @@
         refreshInventory();
         initLines();
         loadVentasPacks();
+        loadReposicionPendiente();
         if (CURRENT_ROLE !== "soporte") {
           loadGastos();
           loadDashboard();
           loadAnalitica();
           loadPedidosDelDia();
+          loadPreciosModelo();
         }
         setPill("Listo");
       });
@@ -1447,7 +1499,7 @@
 
     // Perfil Soporte: solo ve Carga masiva (Productos) y Nueva venta / Historial (Ventas).
     // El resto de pantallas y pestañas quedan ocultas por completo.
-    const ROLE_SOPORTE_SCREENS = ["CargaMasiva", "IngresoVentas", "ResumenVentas"];
+    const ROLE_SOPORTE_SCREENS = ["CargaMasiva", "IngresoVentas", "ResumenVentas", "PorComprar"];
 
     function isScreenAllowedForRole(name) {
       if (CURRENT_ROLE !== "soporte") return true;
@@ -1547,7 +1599,9 @@
       Productos: [
         { name: "IngresoProductos", label: "📥 Ingreso" },
         { name: "CargaMasiva", label: "🧮 Masivo" },
-        { name: "Inventario", label: "📦 Stock" }
+        { name: "Inventario", label: "📦 Stock" },
+        { name: "PorComprar", label: "🛍 Por comprar" },
+        { name: "PreciosModelo", label: "💲 Precios" }
       ],
       Ventas: [
         { name: "IngresoVentas", label: "🧾 Nueva venta" },
@@ -1563,7 +1617,7 @@
     function go(name) {
       name = resolveScreenForRole(name);
       const screens = [
-        "IngresoProductos", "CargaMasiva", "Inventario", "IngresoVentas", "ResumenVentas", "VerificarPedidos",
+        "IngresoProductos", "CargaMasiva", "Inventario", "PorComprar", "PreciosModelo", "IngresoVentas", "ResumenVentas", "VerificarPedidos",
         "IngresoGastos", "ResumenGastos", "ResumenGlobal", "Analitica"
       ];
       const tabs = ["Productos", "Ventas", "IngresoGastos", "ResumenGastos", "ResumenGlobal", "Analitica"];
@@ -1589,6 +1643,8 @@
         IngresoProductos: ["Ingresar productos", "Captura"],
         CargaMasiva: ["Carga masiva", "Modelo × talla × color"],
         Inventario: ["Inventario", "Stock y precios"],
+        PorComprar: ["Por comprar", "Faltantes de stock"],
+        PreciosModelo: ["Precios por cantidad", "1 · 3 · 6 · 12 unidades"],
         IngresoVentas: ["Ingresar ventas", "Carrito rápido"],
         ResumenVentas: ["Resumen ventas", "Por pack"],
         VerificarPedidos: ["Pedidos de clientes", "Verificar y aprobar"],
@@ -1601,6 +1657,8 @@
       document.getElementById("screenSub").textContent = titleMap[name][1];
 
       if (name === "Inventario") refreshInventory();
+      if (name === "PorComprar") loadReposicionPendiente();
+      if (name === "PreciosModelo") loadPreciosModelo();
       if (name === "ResumenVentas") loadVentasPacks();
       if (name === "VerificarPedidos") loadPedidosDelDia();
       if (name === "ResumenGastos") loadGastos();
@@ -1854,15 +1912,15 @@
     // =========================
     // Catálogo real: modelo -> colores que maneja (orden = como se compran).
     const BULK_CATALOG = [
-      { modelo: "Deportivo", colores: ["Palorosa", "Rojo", "Blanco", "Gris", "Negro", "Azulino", "Aceituna", "Beige", "Celeste", "Turquesa"] },
-      { modelo: "Cachetero", colores: ["Gris", "Celeste", "Azulino", "Beige", "Rojo", "Aceituna", "Negro", "Blanco", "Turquesa", "Palorosa", "Acero"] },
-      { modelo: "Semi hilo clasico", colores: ["Rojo", "Negro", "Azulino", "Aceituna", "Beige", "Palorosa", "Blanco", "Acero", "Turquesa", "Gris", "Marrón", "Lila"] },
-      { modelo: "Semi hilo frances", colores: ["Rojo", "Negro", "Azulino", "Aceituna", "Beige", "Palorosa", "Blanco", "Acero", "Turquesa", "Gris"] },
-      { modelo: "Bikini frances", colores: ["Rojo", "Negro", "Azulino", "Aceituna", "Beige", "Palorosa", "Blanco", "Acero", "Turquesa", "Gris"] },
-      { modelo: "Bikini clasico", colores: ["Rojo", "Negro", "Azulino", "Aceituna", "Beige", "Palorosa", "Blanco", "Acero", "Turquesa", "Gris", "Marrón", "Lila"] },
+      { modelo: "Deportivo", colores: ["Palorosa", "Rojo", "Blanco", "Gris", "Negro", "Azulino", "Aceituna", "Beige", "Celeste", "Verde"] },
+      { modelo: "Cachetero", colores: ["Gris", "Celeste", "Azulino", "Beige", "Rojo", "Aceituna", "Negro", "Blanco", "Verde", "Palorosa", "Acero"] },
+      { modelo: "Semi hilo clasico", colores: ["Rojo", "Negro", "Azulino", "Aceituna", "Beige", "Palorosa", "Blanco", "Acero", "Verde", "Gris", "Marrón", "Lila"] },
+      { modelo: "Semi hilo frances", colores: ["Rojo", "Negro", "Azulino", "Aceituna", "Beige", "Palorosa", "Blanco", "Acero", "Verde", "Gris"] },
+      { modelo: "Bikini frances", colores: ["Rojo", "Negro", "Azulino", "Aceituna", "Beige", "Palorosa", "Blanco", "Acero", "Verde", "Gris"] },
+      { modelo: "Bikini clasico", colores: ["Rojo", "Negro", "Azulino", "Aceituna", "Beige", "Palorosa", "Blanco", "Acero", "Verde", "Gris", "Marrón", "Lila"] },
       { modelo: "Bikini Brillo", colores: ["Rojo", "Negro", "Azulino", "Blanco", "Vino", "Palorosa"] },
       { modelo: "Semihilo Brillo", colores: ["Rojo", "Negro", "Azulino", "Blanco", "Vino", "Palorosa"] },
-      { modelo: "Hilo Encaje", colores: ["Gris", "Azulino", "Beige", "Rojo", "Negro", "Blanco", "Turquesa", "Palorosa"] },
+      { modelo: "Hilo Encaje", colores: ["Gris", "Azulino", "Beige", "Rojo", "Negro", "Blanco", "Verde", "Palorosa"] },
       { modelo: "Bikini Raya", colores: ["Azulino", "Rojo", "Blanco", "Beige", "Negro", "Gris"] },
       { modelo: "Semihilo rayas", colores: ["Azulino", "Rojo", "Blanco", "Beige", "Negro", "Gris"] }
     ];
@@ -2319,6 +2377,281 @@
       { label: "Semihilo rayas", modelo: "Semihilo rayas" }
     ];
 
+    // =========================
+    // Precios por cantidad (1 / 3 / 6 / 12 unidades por modelo) — solo Principal.
+    // Sirve únicamente para calcular una "ganancia de referencia" en Ventas; el
+    // monto que realmente se cobra sigue siendo 100% manual (Monto de venta).
+    // =========================
+    let PRECIOS_MODELO_MAP = {};
+
+    function loadPreciosModelo() {
+      if (CURRENT_ROLE !== "principal") return;
+      hideMsg("preciosModeloMsg");
+      google.script.run
+        .withSuccessHandler(list => {
+          PRECIOS_MODELO_MAP = {};
+          (list || []).forEach(p => { PRECIOS_MODELO_MAP[p.modelo] = p; });
+          renderPreciosModeloGrid();
+          actualizarGananciaReferencia();
+        })
+        .withFailureHandler(err => showMsg("preciosModeloMsg", "bad", err?.message || String(err)))
+        .getPreciosModelo();
+    }
+
+    function renderPreciosModeloGrid() {
+      const wrap = document.getElementById("preciosModeloWrap");
+      if (!wrap) return;
+      const cols = "1.3fr .8fr .8fr .8fr .8fr";
+
+      let html = `<div class="table"><div class="trow head" style="grid-template-columns:${cols};">
+        <div>Modelo</div><div class="right">x1</div><div class="right">x3</div><div class="right">x6</div><div class="right">x12</div>
+      </div>`;
+
+      VENTA_MODELOS.forEach(m => {
+        const p = PRECIOS_MODELO_MAP[m.modelo] || {};
+        html += `<div class="trow" style="grid-template-columns:${cols};">
+          <div>${escapeHtml(m.label)}</div>
+          <div><input type="number" min="0" step="0.01" class="precioCell" data-modelo="${escapeHtml(m.modelo)}" data-tier="precio_x1" value="${p.precio_x1 || ""}" placeholder="—" style="padding:8px;text-align:right;" /></div>
+          <div><input type="number" min="0" step="0.01" class="precioCell" data-modelo="${escapeHtml(m.modelo)}" data-tier="precio_x3" value="${p.precio_x3 || ""}" placeholder="—" style="padding:8px;text-align:right;" /></div>
+          <div><input type="number" min="0" step="0.01" class="precioCell" data-modelo="${escapeHtml(m.modelo)}" data-tier="precio_x6" value="${p.precio_x6 || ""}" placeholder="—" style="padding:8px;text-align:right;" /></div>
+          <div><input type="number" min="0" step="0.01" class="precioCell" data-modelo="${escapeHtml(m.modelo)}" data-tier="precio_x12" value="${p.precio_x12 || ""}" placeholder="—" style="padding:8px;text-align:right;" /></div>
+        </div>`;
+      });
+      html += `</div>`;
+
+      wrap.innerHTML = html;
+    }
+
+    function guardarTodosPreciosModelo() {
+      hideMsg("preciosModeloMsg");
+      const filas = {};
+      document.querySelectorAll(".precioCell").forEach(inp => {
+        const modelo = inp.dataset.modelo;
+        if (!filas[modelo]) filas[modelo] = { modelo, precio_x1: 0, precio_x3: 0, precio_x6: 0, precio_x12: 0 };
+        filas[modelo][inp.dataset.tier] = Number(inp.value) || 0;
+      });
+
+      const modelos = Object.values(filas);
+      const btn = document.getElementById("btnGuardarPrecios");
+      btn.disabled = true;
+
+      function guardarUno(idx) {
+        if (idx >= modelos.length) {
+          btn.disabled = false;
+          showMsg("preciosModeloMsg", "ok", "Precios guardados.");
+          loadPreciosModelo();
+          return;
+        }
+        google.script.run
+          .withSuccessHandler(() => guardarUno(idx + 1))
+          .withFailureHandler(err => {
+            btn.disabled = false;
+            showMsg("preciosModeloMsg", "bad", `Error guardando ${modelos[idx].modelo}: ` + (err?.message || err));
+          })
+          .guardarPrecioModelo(modelos[idx]);
+      }
+      guardarUno(0);
+    }
+
+    // Reparto tipo "cambio de monedas": usa primero los tramos más grandes (x12, x6, x3)
+    // y lo que sobra lo cobra al precio de la unidad suelta (x1). Es una referencia, no
+    // una factura — por eso se resuelve así de simple en vez de pedir que cuadre exacto.
+    function calcularPrecioTierParaCantidad(precios, cantidad) {
+      if (!precios || !(cantidad > 0)) return 0;
+
+      const tramos = [12, 6, 3, 1]
+        .map(size => ({ size, precio: Number(precios["precio_x" + size]) || 0 }))
+        .filter(t => t.precio > 0);
+
+      if (!tramos.length) return 0;
+
+      let restante = cantidad;
+      let total = 0;
+      tramos.forEach(t => {
+        const veces = Math.floor(restante / t.size);
+        if (veces > 0) {
+          total += veces * t.precio;
+          restante -= veces * t.size;
+        }
+      });
+
+      if (restante > 0) {
+        const menorTramo = tramos[tramos.length - 1];
+        total += restante * (menorTramo.precio / menorTramo.size);
+      }
+      return total;
+    }
+
+    function actualizarGananciaReferencia() {
+      const box = document.getElementById("gananciaReferenciaBox");
+      if (!box) return;
+
+      if (CURRENT_ROLE !== "principal" || !VENTA_CART.length) {
+        box.classList.add("hidden");
+        return;
+      }
+
+      const cantidadPorModelo = {};
+      const costoPorModelo = {};
+      VENTA_CART.forEach(it => {
+        const modelo = it.p.modelo;
+        cantidadPorModelo[modelo] = (cantidadPorModelo[modelo] || 0) + it.cantidad;
+        costoPorModelo[modelo] = (costoPorModelo[modelo] || 0) + (Number(it.p.precio_compra) || 0) * it.cantidad;
+      });
+
+      let totalVentaRef = 0;
+      let totalCosto = 0;
+      let faltaPrecio = false;
+
+      Object.keys(cantidadPorModelo).forEach(modelo => {
+        const precios = PRECIOS_MODELO_MAP[modelo];
+        if (!precios) faltaPrecio = true;
+        totalVentaRef += calcularPrecioTierParaCantidad(precios, cantidadPorModelo[modelo]);
+        totalCosto += costoPorModelo[modelo];
+      });
+
+      const ganancia = totalVentaRef - totalCosto;
+      document.getElementById("gananciaReferenciaValor").textContent = "S/ " + money(ganancia);
+      document.getElementById("gananciaReferenciaSubtitulo").textContent =
+        "Venta esperada: S/ " + money(totalVentaRef) + (faltaPrecio ? " (falta precio para algún modelo)" : "");
+      box.classList.remove("hidden");
+    }
+
+    // =========================
+    // Por comprar (faltantes de stock por venta) — visible para Principal y Soporte,
+    // no muestra costos ni ganancias, solo qué prenda falta y para qué venta/celular.
+    // =========================
+    // Número al que se manda el resumen de "Por comprar" cuando el dueño lo pide con el botón
+    // de WhatsApp (el mismo que ya usa envios-shalom/app.js para notificaciones operativas).
+    const REPOSICION_WHATSAPP_NUMBER = "51906745999";
+    let REPOSICION_RESUMEN = [];
+    let REPOSICION_PACKS_PENDIENTES = 0;
+
+    function loadReposicionPendiente() {
+      hideMsg("reposicionMsg");
+      google.script.run
+        .withSuccessHandler(list => renderReposicionPendiente(Array.isArray(list) ? list : []))
+        .withFailureHandler(err => showMsg("reposicionMsg", "bad", err?.message || String(err)))
+        .getReposicionPendiente();
+    }
+
+    function renderReposicionPendiente(list) {
+      const resumenWrap = document.getElementById("reposicionResumenWrap");
+      const detalleWrap = document.getElementById("reposicionDetalleWrap");
+      const whatsappWrap = document.getElementById("reposicionWhatsappWrap");
+      if (!resumenWrap || !detalleWrap) return;
+
+      if (!list.length) {
+        resumenWrap.innerHTML = '<div class="msg ok">Nada pendiente por comprar. 🎉</div>';
+        detalleWrap.innerHTML = "";
+        REPOSICION_RESUMEN = [];
+        REPOSICION_PACKS_PENDIENTES = 0;
+        if (whatsappWrap) whatsappWrap.classList.add("hidden");
+        return;
+      }
+
+      // Resumen agregado por producto (para ir a comprar de una vez).
+      const porProducto = {};
+      list.forEach(r => {
+        const key = r.codigo;
+        if (!porProducto[key]) porProducto[key] = { modelo: r.modelo, talla: r.talla, color: r.color, cantidad: 0 };
+        porProducto[key].cantidad += Number(r.cantidad_faltante) || 0;
+      });
+
+      REPOSICION_RESUMEN = Object.values(porProducto).sort((a, b) => a.modelo.localeCompare(b.modelo, "es"));
+      REPOSICION_PACKS_PENDIENTES = new Set(list.map(r => r.packId)).size;
+      if (whatsappWrap) whatsappWrap.classList.remove("hidden");
+
+      const cols = "1.6fr .7fr 1fr .7fr";
+      let htmlResumen = `<div class="table"><div class="trow head" style="grid-template-columns:${cols};">
+        <div>Modelo</div><div>Talla</div><div>Color</div><div class="right">Cant.</div>
+      </div>`;
+      REPOSICION_RESUMEN.forEach(p => {
+        htmlResumen += `<div class="trow" style="grid-template-columns:${cols};">
+          <div>${escapeHtml(p.modelo)}</div><div>${escapeHtml(p.talla)}</div><div>${escapeHtml(p.color)}</div><div class="right"><strong>${p.cantidad}</strong></div>
+        </div>`;
+      });
+      htmlResumen += `</div>`;
+      resumenWrap.innerHTML = htmlResumen;
+
+      // Detalle agrupado por venta (packId), con celular, para saber a quién avisarle.
+      const porPack = {};
+      list.forEach(r => {
+        if (!porPack[r.packId]) porPack[r.packId] = { packId: r.packId, celular: r.cliente_celular, timestamp: r.timestamp, items: [] };
+        porPack[r.packId].items.push(r);
+      });
+
+      detalleWrap.innerHTML = Object.values(porPack).map(pack => {
+        const dt = pack.timestamp ? new Date(pack.timestamp) : null;
+        const dateTxt = dt ? dt.toLocaleString("es-PE", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+        return `<div class="packCard">
+          <div class="packHead">
+            <div class="packAvatar">${escapeHtml((pack.celular || "?").toString().charAt(0))}</div>
+            <div class="packHeadInfo">
+              <div class="packCliente">📱 ${escapeHtml(pack.celular || "Sin celular")}</div>
+              <div class="packDate">${escapeHtml(dateTxt)} · Pack ${escapeHtml(pack.packId)}</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;">
+            ${pack.items.map(it => `
+              <div class="packItemRow">
+                <div>${escapeHtml(it.modelo)} · ${escapeHtml(it.talla)} · ${escapeHtml(it.color)}</div>
+                <div class="right"><strong>x${it.cantidad_faltante}</strong></div>
+              </div>
+            `).join("")}
+          </div>
+          <div class="actions">
+            <button onclick="marcarReposicionCompradaUI('${escapeHtml(pack.packId)}', this)">✅ Ya lo compré</button>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    function marcarReposicionCompradaUI(packId, btn) {
+      btn.disabled = true;
+      google.script.run
+        .withSuccessHandler(() => {
+          showMsg("reposicionMsg", "ok", "Marcado como comprado.");
+          loadReposicionPendiente();
+        })
+        .withFailureHandler(err => {
+          btn.disabled = false;
+          showMsg("reposicionMsg", "bad", err?.message || String(err));
+        })
+        .marcarReposicionComprada({ packId });
+    }
+
+    // Manda el resumen agregado (lo que hay que ir a comprar) por WhatsApp — así queda un
+    // registro fuera del sistema y no hay que volver a revisar la pantalla para acordarse.
+    function enviarPorComprarWhatsapp() {
+      if (!REPOSICION_RESUMEN.length) {
+        showMsg("reposicionMsg", "bad", "No hay nada pendiente por comprar todavía.");
+        return;
+      }
+
+      const fechaHora = new Intl.DateTimeFormat("es-PE", {
+        timeZone: "America/Lima",
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit", hour12: true
+      }).format(new Date());
+
+      const totalPrendas = REPOSICION_RESUMEN.reduce((sum, p) => sum + p.cantidad, 0);
+      const lineas = REPOSICION_RESUMEN.map(p => `▫️ ${p.modelo} · ${p.talla} · ${p.color} — ${p.cantidad}`).join("\n");
+
+      const mensaje = `🛍️ LISTA POR COMPRAR (stock faltante)
+
+${lineas}
+
+📦 Total: ${REPOSICION_RESUMEN.length} producto(s) · ${totalPrendas} prenda(s)
+🧾 Ventas pendientes de reponer: ${REPOSICION_PACKS_PENDIENTES}
+📅 Generado: ${fechaHora}`;
+
+      // api.whatsapp.com en vez de wa.me: evita el salto de redirección extra que en algunas
+      // redes falla con ERR_QUIC_PROTOCOL_ERROR (mismo ajuste que en envios-shalom/app.js).
+      const url = `https://api.whatsapp.com/send?phone=${REPOSICION_WHATSAPP_NUMBER}&text=${encodeURIComponent(mensaje)}`;
+      window.open(url, "_blank");
+    }
+
     let VENTA_CART = [];
     let SELECTED_MODELO = "";
     let SELECTED_TALLA = "";
@@ -2459,6 +2792,22 @@
       renderCarrito();
     }
 
+    // Una misma venta puede llevar varios productos distintos (ej: 2 modelos diferentes
+    // para la misma persona). El carrito ya lo soporta — esto solo hace explícito el paso:
+    // limpia la selección de modelo/talla/color y lleva la vista arriba para elegir el
+    // siguiente producto, sin tocar lo que ya está en el carrito.
+    function agregarOtroProducto() {
+      SELECTED_MODELO = "";
+      SELECTED_TALLA = "";
+      COLOR_QTY_MAP = {};
+      document.getElementById("colorSearch").value = "";
+      renderModeloBtns();
+      renderTallaBtns();
+      renderColorList();
+      const wrap = document.getElementById("modeloBtnsWrap");
+      if (wrap) wrap.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
     function quitarDelCarrito(codigo) {
       VENTA_CART = VENTA_CART.filter(it => it.codigo !== codigo);
       renderCarrito();
@@ -2466,6 +2815,8 @@
 
     function renderCarrito() {
       const wrap = document.getElementById("carritoWrap");
+      const otroWrap = document.getElementById("agregarOtroWrap");
+      if (otroWrap) otroWrap.classList.toggle("hidden", !VENTA_CART.length);
 
       if (!VENTA_CART.length) {
         wrap.innerHTML = '<div class="small">Aún no agregaste prendas.</div>';
@@ -2503,6 +2854,8 @@
 
       const monto = Number(document.getElementById("venTotalPaid").value || 0);
       document.getElementById("carritoMontoResumen").textContent = "S/ " + money(monto);
+
+      actualizarGananciaReferencia();
     }
 
     function resetVentaPack() {
@@ -2528,14 +2881,8 @@
         return;
       }
 
-      for (const it of VENTA_CART) {
-        const stock = Number(it.p?.stock || 0);
-        if (it.cantidad > stock) {
-          showMsg("venMsg", "bad", `Stock insuficiente en ${it.p.modelo} / ${it.p.color}. Disponible: ${stock}`);
-          return;
-        }
-      }
-
+      // No bloqueamos por stock insuficiente: se permite la venta igual (las filas en rojo del
+      // carrito ya avisan cuáles) y el faltante queda registrado en "🛍 Por comprar" para reponerlo.
       const cliente_celular = document.getElementById("cCelular").value.trim();
       if (!cliente_celular) {
         showMsg("venMsg", "bad", "Ingresa el celular del cliente.");
@@ -2557,8 +2904,13 @@
           document.getElementById("btnVentaPack").disabled = false;
 
           if (res && res.packId) {
-            showMsg("venMsg", "ok", `Venta guardada. Pack: ${res.packId}`);
+            const faltantes = res.faltantes || [];
+            const msg = faltantes.length
+              ? `Venta guardada. Pack: ${res.packId} — ⚠️ ${faltantes.length} prenda(s) sin stock suficiente, agregadas a "🛍 Por comprar".`
+              : `Venta guardada. Pack: ${res.packId}`;
+            showMsg("venMsg", faltantes.length ? "bad" : "ok", msg);
             loadProducts(() => { refreshInventory(); loadVentasPacks(); loadDashboard(); loadAnalitica(); });
+            loadReposicionPendiente();
             resetVentaPack();
           } else {
             showMsg("venMsg", "bad", "No se pudo guardar la venta.");
@@ -2602,7 +2954,11 @@
         const dt = pk.timestamp ? new Date(pk.timestamp) : null;
         const dateTxt = dt ? dt.toLocaleString("es-PE", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
 
-        const nombre = (pk.cliente_nombre && pk.cliente_nombre.trim()) || pk.cliente_celular || "Cliente sin datos";
+        // cliente_celular puede volver como Number desde Sheets si la celda quedó con formato
+        // numérico (Google la autoconvierte) — forzamos String() para no romper .charAt().
+        const celular = String(pk.cliente_celular || "").trim();
+        const tieneNombre = !!(pk.cliente_nombre && String(pk.cliente_nombre).trim());
+        const nombre = (tieneNombre ? String(pk.cliente_nombre).trim() : "") || celular || "Cliente sin datos";
         const inicial = nombre.charAt(0).toUpperCase() || "?";
         const prendas = (pk.items || []).reduce((sum, it) => sum + (Number(it.cantidad) || 0), 0);
         const ganancia = Number(pk.utilidad_total || 0);
@@ -2615,7 +2971,7 @@
             <div class="packAvatar">${escapeHtml(inicial)}</div>
             <div class="packHeadInfo">
               <div class="packCliente">${escapeHtml(nombre)}</div>
-              <div class="packDate">${escapeHtml(dateTxt)} · Pack ${escapeHtml(pk.packId || "")}</div>
+              <div class="packDate">${(tieneNombre && celular) ? "📱 " + escapeHtml(celular) + " · " : ""}${escapeHtml(dateTxt)} · Pack ${escapeHtml(pk.packId || "")}</div>
             </div>
           </div>
 
