@@ -117,6 +117,34 @@
       text-transform: uppercase;
     }
 
+    .topbarRight {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .logoutBtn {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      min-height: 0;
+      padding: 0;
+      border-radius: 10px;
+      background: rgba(214, 83, 125, 0.06);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      box-shadow: none;
+      font-size: 15px;
+    }
+
+    .logoutBtn:hover:not(:disabled) {
+      background: rgba(220, 38, 38, 0.1);
+      color: #dc2626;
+      transform: none;
+      box-shadow: none;
+    }
+
     /* Content & Animations */
     .content {
       padding: 20px 16px;
@@ -850,7 +878,7 @@
   <div id="loginGate" class="loginGate">
     <div class="loginCard">
       <div class="title" style="font-size:1.5rem;">🔒 Panel del negocio</div>
-      <div class="small" style="margin:8px 0 20px;">Acceso solo para el dueño.</div>
+      <div class="small" style="margin:8px 0 20px;">Ingresa tu contraseña. El acceso se ajusta según tu perfil.</div>
       <label>Contraseña</label>
       <input id="loginPass" type="password" placeholder="••••••••" autocomplete="off" />
       <div class="actions">
@@ -866,7 +894,10 @@
         <div class="title" id="screenTitle">Ingresar productos</div>
         <div class="small" id="screenSub">Captura</div>
       </div>
-      <div class="pill" id="statusPill">Conectando…</div>
+      <div class="topbarRight">
+        <div class="pill" id="statusPill">Conectando…</div>
+        <button type="button" class="logoutBtn" onclick="cerrarSesion()" title="Cerrar sesión">🚪</button>
+      </div>
     </div>
 
     <div class="content">
@@ -1074,17 +1105,11 @@
 
       <section id="screenIngresoVentas" class="card hidden">
         <h2>🧾 Ingresar ventas</h2>
-        <div class="small">Empieza con los datos del cliente y luego elige modelo → talla → colores con su cantidad → agregar. Si te equivocas, borra esa prenda con ✖.</div>
+        <div class="small">Empieza con el celular del cliente y luego elige modelo → talla → colores con su cantidad → agregar. Si te equivocas, borra esa prenda con ✖.</div>
 
-        <div class="row cols2" style="margin-top:14px;">
-          <div>
-            <label>Nombre del cliente</label>
-            <input id="cNombre" placeholder="Ej: María Pérez" oninput="actualizarHeaderCliente()" />
-          </div>
-          <div>
-            <label>Celular del cliente</label>
-            <input id="cCelular" type="tel" placeholder="Ej: 987654321" oninput="actualizarHeaderCliente()" />
-          </div>
+        <div style="margin-top:14px;">
+          <label>Celular del cliente</label>
+          <input id="cCelular" type="tel" placeholder="Ej: 987654321" oninput="actualizarHeaderCliente()" />
         </div>
 
         <div style="margin-top:14px;">
@@ -1141,20 +1166,22 @@
           <button class="secondary" onclick="loadVentasPacks()">Actualizar</button>
         </div>
 
-        <div class="small" style="margin-top:14px;">Descarga en Excel qué compró cada persona, en qué fecha y cómo se envía, para un rango de días.</div>
-        <div class="row cols2" style="margin-top:10px;">
-          <div>
-            <label>Desde</label>
-            <input id="ventasExportDesde" type="date" />
+        <div id="ventasExportBox">
+          <div class="small" style="margin-top:14px;">Descarga en Excel qué compró cada persona, en qué fecha y cómo se envía, para un rango de días.</div>
+          <div class="row cols2" style="margin-top:10px;">
+            <div>
+              <label>Desde</label>
+              <input id="ventasExportDesde" type="date" />
+            </div>
+            <div>
+              <label>Hasta</label>
+              <input id="ventasExportHasta" type="date" />
+            </div>
           </div>
-          <div>
-            <label>Hasta</label>
-            <input id="ventasExportHasta" type="date" />
+          <div class="actions">
+            <button class="secondary" onclick="setRangoExportRapido(7)">Últimos 7 días</button>
+            <button class="secondary" onclick="descargarVentasExcel()">📥 Descargar ventas (Excel)</button>
           </div>
-        </div>
-        <div class="actions">
-          <button class="secondary" onclick="setRangoExportRapido(7)">Últimos 7 días</button>
-          <button class="secondary" onclick="descargarVentasExcel()">📥 Descargar ventas (Excel)</button>
         </div>
 
         <div id="packsWrap" style="margin-top:14px;"></div>
@@ -1342,7 +1369,13 @@
     // ==========================================
     // ⚠️ IMPORTANTE: Pon aquí la URL de tu Web App de Google Apps Script
     const API_URL = "https://script.google.com/macros/s/AKfycby96q3BUEbRRjcs3_dcWTlOfgUMtK_7eKLEnHKnLIWnPtgHmg-nyf4dG5WDMJN7B5kblA/exec";
-    const API_TOKEN = "inv_9Gk2pQ7xWm3vT1sL8nZ0aR6cY5uE4oP2iK_2026";
+    // Dos tokens embebidos a propósito: cuál se usa depende del perfil con el que se inició sesión
+    // (ver CURRENT_ROLE más abajo). El servidor (Code.gs) valida SUPPORT_API_TOKEN contra una lista
+    // fija de acciones permitidas — aunque alguien con la sesión de Soporte abra la consola del
+    // navegador, el propio servidor rechaza cualquier acción fuera de esa lista (ver SUPPORT_ACTIONS).
+    const ADMIN_API_TOKEN = "inv_9Gk2pQ7xWm3vT1sL8nZ0aR6cY5uE4oP2iK_2026";
+    const SUPPORT_API_TOKEN = "sop_3Hq7Ym1Vb9Xk4Nc2Zw8Rd6Tf5Ag0Ly_2026";
+    function currentApiToken() { return CURRENT_ROLE === "soporte" ? SUPPORT_API_TOKEN : ADMIN_API_TOKEN; }
 
     // Simulador de google.script.run para funcionar fuera de Google (en GitHub)
     const google = {
@@ -1361,7 +1394,7 @@
 
               return (...args) => {
                 let payloadObj = {};
-                if (['getVentasPacks', 'getGastos'].includes(prop)) payloadObj = { limit: args[0] };
+                if (['getVentasPacks', 'getVentasPacksSoporte', 'getGastos'].includes(prop)) payloadObj = { limit: args[0] };
                 else if (['getVentasDiariasRango', 'getRentabilidadProductosRango'].includes(prop)) payloadObj = { desde: args[0], hasta: args[1] };
                 else if (prop === 'getAlertasRotacion') payloadObj = { diasVentana: args[0], umbralDias: args[1] };
                 else payloadObj = args[0] || {};
@@ -1369,7 +1402,7 @@
                 // Se usa GET y el payload se envía en la URL para evitar que Google
                 // elimine los datos en su redirección (302) de CORS.
                 const payloadStr = encodeURIComponent(JSON.stringify(payloadObj));
-                const qs = `?action=${prop}&token=${API_TOKEN}&payload=${payloadStr}`;
+                const qs = `?action=${prop}&token=${currentApiToken()}&payload=${payloadStr}`;
 
                 fetch(API_URL + qs)
                   .then(r => r.json())
@@ -1388,16 +1421,19 @@
 
     // La app real solo arranca después de pasar la contraseña (ver bloque de login más abajo).
     function arrancarApp() {
+      applyRoleRestrictions();
       setPill("Cargando…");
-      renderSubTabs("IngresoProductos", "Productos");
+      go("IngresoProductos");
       loadProducts(() => {
         refreshInventory();
         initLines();
         loadVentasPacks();
-        loadGastos();
-        loadDashboard();
-        loadAnalitica();
-        loadPedidosDelDia();
+        if (CURRENT_ROLE !== "soporte") {
+          loadGastos();
+          loadDashboard();
+          loadAnalitica();
+          loadPedidosDelDia();
+        }
         setPill("Listo");
       });
       bindProductosLive();
@@ -1409,8 +1445,40 @@
       }
     }
 
+    // Perfil Soporte: solo ve Carga masiva (Productos) y Nueva venta / Historial (Ventas).
+    // El resto de pantallas y pestañas quedan ocultas por completo.
+    const ROLE_SOPORTE_SCREENS = ["CargaMasiva", "IngresoVentas", "ResumenVentas"];
+
+    function isScreenAllowedForRole(name) {
+      if (CURRENT_ROLE !== "soporte") return true;
+      return ROLE_SOPORTE_SCREENS.includes(name);
+    }
+
+    function resolveScreenForRole(name) {
+      if (isScreenAllowedForRole(name)) return name;
+      const group = SCREEN_TO_GROUP[name];
+      if (group) {
+        const fallback = SCREEN_GROUPS[group].find(s => isScreenAllowedForRole(s.name));
+        if (fallback) return fallback.name;
+      }
+      return "IngresoVentas";
+    }
+
+    function applyRoleRestrictions() {
+      const isSoporte = CURRENT_ROLE === "soporte";
+      ["tabIngresoGastos", "tabResumenGastos", "tabResumenGlobal", "tabAnalitica"].forEach(id => {
+        document.getElementById(id).classList.toggle("hidden", isSoporte);
+      });
+      const exportBox = document.getElementById("ventasExportBox");
+      if (exportBox) exportBox.classList.toggle("hidden", isSoporte);
+    }
+
+    let CURRENT_ROLE = "principal";
+
     window.addEventListener("load", () => {
-      if (sessionStorage.getItem("admin_auth") === "1") {
+      const savedRole = sessionStorage.getItem("admin_role");
+      if (sessionStorage.getItem("admin_auth") === "1" && savedRole) {
+        CURRENT_ROLE = savedRole;
         document.getElementById("loginGate").classList.add("hidden");
         arrancarApp();
       } else {
@@ -1422,20 +1490,41 @@
 
     // Gate de acceso: solo evita que alguien casual abra esta página. La protección real es que
     // este archivo (con el token de administrador) nunca se comparte con clientes — solo pedido.html
-    // (que lleva un token distinto y limitado) se comparte públicamente.
-    const ADMIN_PASSWORD = "70860109";
+    // (que lleva un token distinto y limitado) se comparte públicamente. Nota: el perfil Soporte
+    // usa este mismo archivo y token, así que su restricción es solo de interfaz (oculta pantallas),
+    // no un límite duro del servidor — pensado para un empleado de confianza, no para el público.
+    const PRINCIPAL_PASSWORD = "70860109";
+    const SOPORTE_PASSWORD = "1234";
 
     function intentarLogin() {
       const val = document.getElementById("loginPass").value;
       const msg = document.getElementById("loginMsg");
-      if (val === ADMIN_PASSWORD) {
+      let role = null;
+      if (val === PRINCIPAL_PASSWORD) role = "principal";
+      else if (val === SOPORTE_PASSWORD) role = "soporte";
+
+      if (role) {
+        CURRENT_ROLE = role;
         sessionStorage.setItem("admin_auth", "1");
+        sessionStorage.setItem("admin_role", role);
         document.getElementById("loginGate").classList.add("hidden");
         arrancarApp();
       } else {
         msg.textContent = "Contraseña incorrecta.";
         msg.classList.remove("hidden");
       }
+    }
+
+    function cerrarSesion() {
+      sessionStorage.removeItem("admin_auth");
+      sessionStorage.removeItem("admin_role");
+      CURRENT_ROLE = "principal";
+
+      const passInput = document.getElementById("loginPass");
+      passInput.value = "";
+      document.getElementById("loginMsg").classList.add("hidden");
+      document.getElementById("loginGate").classList.remove("hidden");
+      passInput.focus();
     }
 
     function setPill(t) { document.getElementById("statusPill").textContent = t; }
@@ -1472,6 +1561,7 @@
     });
 
     function go(name) {
+      name = resolveScreenForRole(name);
       const screens = [
         "IngresoProductos", "CargaMasiva", "Inventario", "IngresoVentas", "ResumenVentas", "VerificarPedidos",
         "IngresoGastos", "ResumenGastos", "ResumenGlobal", "Analitica"
@@ -1527,7 +1617,7 @@
         return;
       }
       wrap.classList.remove("hidden");
-      wrap.innerHTML = SCREEN_GROUPS[group].map(s =>
+      wrap.innerHTML = SCREEN_GROUPS[group].filter(s => isScreenAllowedForRole(s.name)).map(s =>
         `<button type="button" class="subtab ${s.name === activeName ? "active" : ""}" onclick="go('${s.name}')">${s.label}</button>`
       ).join("");
     }
@@ -2401,10 +2491,8 @@
     // Nombre + celular funcionan como encabezado/identificador del pedido: apenas se escriben,
     // el panel del carrito pasa a mostrar "Pedido de <nombre/celular>" en vez del título genérico.
     function actualizarHeaderCliente() {
-      const nombre = document.getElementById("cNombre").value.trim();
       const celular = document.getElementById("cCelular").value.trim();
-      const partes = [nombre, celular].filter(Boolean).join(" · ");
-      document.getElementById("carritoHeaderLabel").textContent = partes ? `🛒 Pedido de ${partes}` : "🛒 Prendas en esta venta";
+      document.getElementById("carritoHeaderLabel").textContent = celular ? `🛒 Pedido de ${celular}` : "🛒 Prendas en esta venta";
     }
 
     function recalcPack() {
@@ -2423,7 +2511,6 @@
       SELECTED_TALLA = "";
       COLOR_QTY_MAP = {};
       document.getElementById("venTotalPaid").value = "";
-      document.getElementById("cNombre").value = "";
       document.getElementById("cCelular").value = "";
       document.getElementById("colorSearch").value = "";
       hideMsg("venMsg");
@@ -2449,12 +2536,7 @@
         }
       }
 
-      const cliente_nombre = document.getElementById("cNombre").value.trim();
       const cliente_celular = document.getElementById("cCelular").value.trim();
-      if (!cliente_nombre) {
-        showMsg("venMsg", "bad", "Ingresa el nombre del cliente.");
-        return;
-      }
       if (!cliente_celular) {
         showMsg("venMsg", "bad", "Ingresa el celular del cliente.");
         return;
@@ -2486,7 +2568,7 @@
           document.getElementById("btnVentaPack").disabled = false;
           showMsg("venMsg", "bad", err?.message || String(err));
         })
-        .addVentaPack({ items, total_pagado, nota: "", metodo_pago: "", metodo_envio: "", cliente_nombre, cliente_celular });
+        .addVentaPack({ items, total_pagado, nota: "", metodo_pago: "", metodo_envio: "", cliente_nombre: "", cliente_celular });
     }
 
     // =========================
@@ -2494,10 +2576,11 @@
     // =========================
     function loadVentasPacks() {
       hideMsg("packsMsg");
-      google.script.run
+      const run = google.script.run
         .withSuccessHandler(list => renderPacks(Array.isArray(list) ? list : []))
-        .withFailureHandler(err => showMsg("packsMsg", "bad", err?.message || String(err)))
-        .getVentasPacks(100);
+        .withFailureHandler(err => showMsg("packsMsg", "bad", err?.message || String(err)));
+      if (CURRENT_ROLE === "soporte") run.getVentasPacksSoporte(100);
+      else run.getVentasPacks(100);
     }
 
     function renderPacks(packs) {
@@ -2519,12 +2602,13 @@
         const dt = pk.timestamp ? new Date(pk.timestamp) : null;
         const dateTxt = dt ? dt.toLocaleString("es-PE", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
 
-        const nombre = pk.cliente_nombre ? pk.cliente_nombre.trim() : "Cliente sin nombre";
+        const nombre = (pk.cliente_nombre && pk.cliente_nombre.trim()) || pk.cliente_celular || "Cliente sin datos";
         const inicial = nombre.charAt(0).toUpperCase() || "?";
         const prendas = (pk.items || []).reduce((sum, it) => sum + (Number(it.cantidad) || 0), 0);
         const ganancia = Number(pk.utilidad_total || 0);
         const gananciaClase = ganancia >= 0 ? "pos" : "neg";
         const detailId = "packDetail" + idx;
+        const showProfit = CURRENT_ROLE !== "soporte";
 
         card.innerHTML = `
           <div class="packHead">
@@ -2540,7 +2624,7 @@
             ${pk.metodo_envio ? `<span class="chip">${escapeHtml(pk.metodo_envio)}</span>` : ""}
           </div>
 
-          <div class="packStats">
+          <div class="packStats" style="grid-template-columns:repeat(${showProfit ? 3 : 2}, 1fr);">
             <div class="packStat">
               <div class="lbl">Prendas</div>
               <div class="val">${prendas}</div>
@@ -2549,10 +2633,11 @@
               <div class="lbl">Vendido</div>
               <div class="val">S/ ${money(pk.total_pagado || 0)}</div>
             </div>
+            ${showProfit ? `
             <div class="packStat profit">
               <div class="lbl">Ganancia neta</div>
               <div class="val ${gananciaClase}">S/ ${money(ganancia)}</div>
-            </div>
+            </div>` : ""}
           </div>
 
           <div class="packToggle" onclick="document.getElementById('${detailId}').classList.toggle('show')">▾ Ver prendas</div>
@@ -2560,7 +2645,7 @@
             ${(pk.items || []).map(it => `
               <div class="packItemRow">
                 <div>${escapeHtml(it.nombre || it.modelo || "")} <span class="chip">x${Number(it.cantidad || 0)}</span></div>
-                <div class="right">${money(it.utilidad_linea || 0)}</div>
+                ${showProfit ? `<div class="right">${money(it.utilidad_linea || 0)}</div>` : ""}
               </div>
             `).join("")}
           </div>
